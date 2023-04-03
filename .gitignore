@@ -1,0 +1,12 @@
+*data/*
+*.csv
+*.xlsx
+*.docx
+*.pdf
+*.out
+*plots/*
+*manuals/*
+*handbooks/*
+*papers/*
+*management/*
+*~
