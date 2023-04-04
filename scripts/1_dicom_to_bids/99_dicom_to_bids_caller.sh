@@ -11,11 +11,9 @@ DIR=$1 #check if $ needed.
 echo $DIR
 SUB=$2
 echo $SUB
-#insert logic here --> might be PID/PID for dir or PID/e***
-source 1_dic_to_nifit.sh $DIR $SUB
-
+#Pipeline calls, one after another. 
+source /projects/b1108/studies/transitions2/scripts/1_dicom_to_bids/1_dic_to_nifti.sh $DIR $SUB 
 python 2_nifti_to_bids_naming.py $SUB
-
 source 3_deface.sh $SUB
 
 
