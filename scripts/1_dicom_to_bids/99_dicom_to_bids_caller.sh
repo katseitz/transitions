@@ -3,7 +3,7 @@
 #SBATCH -A p31833
 #SBATCH -p normal
 #SBATCH -t 1:00:00
-#SBATCH --mem=3G
+#SBATCH --mem=1G
 #SBATCH -J tran_1
 
 
@@ -15,6 +15,8 @@ echo $SUB
 source /projects/b1108/studies/transitions2/scripts/1_dicom_to_bids/1_dic_to_nifti.sh $DIR $SUB 
 python 2_nifti_to_bids_naming.py $SUB
 source 3_deface.sh $SUB
+
+
 
 
 

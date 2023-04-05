@@ -6,7 +6,7 @@ import sys
 #takes in a participant ID in format tXXXX
 participant = sys.argv[1]
 
-subjectPath = "/projects/b1108/studies/transitions/data/raw/neuroimaging/bids/sub-"+participant
+subjectPath = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-"+participant
 print(subjectPath)
 #finds all fmaps 
 fmapsPath = os.path.join(subjectPath, 'ses-1', 'fmap', '*.json')

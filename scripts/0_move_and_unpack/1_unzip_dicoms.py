@@ -6,18 +6,22 @@ import shutil
 ##Deal with that we're in an infinite loop
 compressed_path = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/compressed/"
 compressed_files = glob.glob(compressed_path + "*" )
-
+uncompressed_path = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/uncompressed/"
+uncompressed_files = glob.glob(uncompressed_path + "*" )
+problem_subs = ["t1135", "t1120", "t1123", "t1140"]
+#print(uncompressed_files)
 
 for compressed in compressed_files:
     if(not(compressed == "/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/compressed/complete")):
-        print(compressed)
+        
+        #print(compressed)
         #grabs subject id from compressed file name
         subject = compressed.split("/")[-1][0:5].lower()
-        print(subject)
+        if(not(uncompressed_path + subject in uncompressed_files) and not(subject in problem_subs)):
+            #print(uncompressed_path + subject)
+            print(subject)
         #unzip/untar into participant dir
-        uncom_path = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/uncompressed/"
-        shutil.unpack_archive(compressed, uncom_path + subject)
-        #shutil.move(compressed, "/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/compressed/complete")
+            shutil.unpack_archive(compressed, uncompressed_path + subject)
 
         '''
         if(subject = "t1040"):
