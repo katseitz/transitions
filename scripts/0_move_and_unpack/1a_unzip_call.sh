@@ -7,4 +7,4 @@
 #SBATCH --mem=5G ## how much RAM do you need per computer/node (this affects your FairShare score so be careful to not ask for more than you need))
 #SBATCH --job-name=unzip ## When you run squeue -u  this is how you can identify the job
 
-python 1_unzip_dicoms.py
+python /projects/b1108/studies/transitions2/scripts/0_move_and_unpack/1_unzip_dicoms.py
