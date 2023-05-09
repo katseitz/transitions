@@ -14,7 +14,7 @@ echo $DIR
 SUB=$2
 echo $SUB
 
-scan_folders=/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/uncompressed/$DIR/*/* 
+scan_folders=/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/uncompressed/$DIR/*/*
 echo $scan_folders
 
 if [ ! -d "/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-$SUB" ]; then
