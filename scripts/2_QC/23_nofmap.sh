@@ -16,6 +16,7 @@ echo "beginning preprocessing"
 singularity run --cleanenv -B /projects/b1108:/projects/b1108 \
 /projects/b1108/software/singularity_images/fmriprep-23.0.1.simg \
 /projects/b1108/studies/transitions2/data/raw/neuroimaging/bids \
-/projects/b1108/studies/transitions2/data/processed/neuroimaging/23_fmriprep_nodc participant \
---participant-label ${1} --fs-license-file /projects/b1108/software/freesurfer_license/license.txt \
+/projects/b1108/studies/transitions2/data/processed/neuroimaging/fmriprep_ses-1 participant \
+--participant-label ${1} --bids-filter-file bids_filter_file_ses-1.json \
+--fs-license-file /projects/b1108/software/freesurfer_license/license.txt \
 -w /projects/b1108/studies/transitions2/data/processed/neuroimaging/23_fmriprep_nodc/work --ignore fieldmaps --skip_bids_validation

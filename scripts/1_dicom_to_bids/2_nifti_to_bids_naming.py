@@ -6,12 +6,13 @@ import json
 
 
 participant = sys.argv[1]
+ses = sys.argv[2]
 
 '''
     Removes participant name from file names. 
             Parameters:
                     a) participant in f1XXXX format
-                    b) directory up to and inclduding ses-1
+                    b) directory up to and inclduding ses-XX
             Returns:
                     none
 '''
@@ -26,7 +27,7 @@ def remove_name(participant, directory):
     Creates them, if they do not exist.
             Parameters:
                     a) participant in f1XXXX format
-                    b) directory up to and inclduding ses-1
+                    b) directory up to and inclduding ses-XX
             Returns:
                     none
 '''
@@ -43,7 +44,7 @@ def makedir(participant, directory):
     Renames files all per the file renaming document from Nina
             Parameters:
                     a) participant in f1XXXX format
-                    b) directory up to and inclduding ses-1
+                    b) directory up to and inclduding ses-XX
             Returns:
                     none
 '''
@@ -55,28 +56,28 @@ def rename_partic(participant, directory):
     for file in files:
         print(file)
         parts = file.split(".", 1)
-        new_name = "sub-" + participant + "_ses-1_phase1." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_phase1." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
     files = glob.glob(directory + "/" + participant + "--FMAP2--GR--?_ph*") + glob.glob(directory + "/" + participant + "--FMAP2*ph*")
     for file in files:
         print(file)
         parts = file.split(".", 1)
-        new_name = "sub-" + participant + "_ses-1_phase2." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_phase2." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
     files = glob.glob(directory + "/" + participant + "--FMAP1--GR--*") + glob.glob(directory + "/" + participant + "--FMAP1*")
     for file in files:
         print(file)
         parts = file.split(".", 1)
-        new_name = "sub-" + participant + "_ses-1_magnitude1." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_magnitude1." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
     files = glob.glob(directory + "/" + participant + "--FMAP2--GR--*") + glob.glob(directory + "/" + participant + "--FMAP2*")
     for file in files:
         print(file)
         parts = file.split(".", 1)
-        new_name = "sub-" + participant + "_ses-1_magnitude2." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_magnitude2." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
     #MID 1
@@ -89,7 +90,7 @@ def rename_partic(participant, directory):
             json_obj['TaskName'] = 'mid'
             with open(file, 'w') as f:
                 json.dump(json_obj, f)
-        new_name = "sub-" + participant + "_ses-1_task-mid_run-01_bold." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_task-mid_run-01_bold." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
     #MID2
@@ -102,7 +103,7 @@ def rename_partic(participant, directory):
             json_obj['TaskName'] = 'mid'
             with open(file, 'w') as f:
                 json.dump(json_obj, f)
-        new_name = "sub-" + participant + "_ses-1_task-mid_run-02_bold." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_task-mid_run-02_bold." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name)  
 
@@ -116,7 +117,7 @@ def rename_partic(participant, directory):
             json_obj['TaskName'] = 'rest'
             with open(file, 'w') as f:
                 json.dump(json_obj, f)
-        new_name = "sub-" + participant + "_ses-1_task-rest_run-01_bold." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_task-rest_run-01_bold." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
     #REST2
@@ -129,7 +130,7 @@ def rename_partic(participant, directory):
             json_obj['TaskName'] = 'rest'
             with open(file, 'w') as f:
                 json.dump(json_obj, f)
-        new_name = "sub-" + participant + "_ses-1_task-rest_run-02_bold." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_task-rest_run-02_bold." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name)  
     #REST3
@@ -142,7 +143,7 @@ def rename_partic(participant, directory):
             json_obj['TaskName'] = 'rest'
             with open(file, 'w') as f:
                 json.dump(json_obj, f)
-        new_name = "sub-" + participant + "_ses-1_task-rest_run-03_bold." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_task-rest_run-03_bold." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
     #REST4
@@ -155,7 +156,7 @@ def rename_partic(participant, directory):
             json_obj['TaskName'] = 'rest'
             with open(file, 'w') as f:
                 json.dump(json_obj, f)
-        new_name = "sub-" + participant + "_ses-1_task-rest_run-04_bold." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_task-rest_run-04_bold." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
     #T1W
@@ -163,7 +164,7 @@ def rename_partic(participant, directory):
     for file in files:
         print(file)
         parts = file.split(".", 1)
-        new_name = "sub-" + participant + "_ses-1_run-1_T1w." + parts[1]
+        new_name = "sub-" + participant + "_" + ses + "_run-1_T1w." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
 
@@ -171,21 +172,21 @@ def rename_partic(participant, directory):
     Moves files to their respective sub folders
             Parameters:
                     a) participant in f1XXXX format
-                    b) directory up to and inclduding ses-1
+                    b) directory up to and inclduding ses-XX
             Returns:
                     none
 '''   
 def move_to_folders(participant, directory):
     #move functional files
     print("in move to folders")
-    func_pattern = "sub-"+ participant + "_ses-1_task*"
+    func_pattern = "sub-"+ participant + "_" + ses+ "_task*"
     func_files = glob.glob(directory + "/" + func_pattern)
     for file in func_files:
         print(file)
         parts = file.split("/")
         os.rename(file, directory + "/func/" + parts[-1])
     #move anatomical files
-    anat_pattern = "sub-"+ participant + "_ses-1_run-1_T1w*"
+    anat_pattern = "sub-"+ participant + "_"+ ses + "_run-1_T1w*"
     anat_files = glob.glob(directory + "/" + anat_pattern)
     for file in anat_files:
         print(file)
@@ -202,7 +203,7 @@ def move_to_folders(participant, directory):
 
 def main():
     key = participant
-    value = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-" + participant + "/ses-1" 
+    value = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-" + participant + "/" + ses 
     remove_name(key, value)
     makedir(key, value)
     rename_partic(key, value)

@@ -13,20 +13,22 @@ DIR=$1 #check if $ needed.
 echo $DIR
 SUB=$2
 echo $SUB
+SES=$3
+echo $SES
 
-scan_folders=/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/uncompressed/$DIR/*/*
+scan_folders=/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/uncompressed/$SES/$DIR/*/*
 echo $scan_folders
 
 if [ ! -d "/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-$SUB" ]; then
     mkdir /projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-$SUB
 fi
-if [ ! -d "/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-$SUB/ses-1" ]; then
-    mkdir /projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-$SUB/ses-1     
+if [ ! -d "/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-$SUB/$SES" ]; then
+    mkdir /projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-$SUB/$SES     
 fi
 
 for SCAN in $scan_folders; do # Whitespace-safe but not recursive.
     echo $SCAN
-    OUTPUT=/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-$SUB/ses-1
+    OUTPUT=/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-$SUB/$SES
     echo $OUTPUT
     dcm2niix -b y -z o -w 1 -f %n--%d--s%s--e%e -o $OUTPUT $SCAN
 done

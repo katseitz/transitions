@@ -9,6 +9,7 @@
 #SBATCH	--mail-user=katharinaseitz@northwestern.edu
 
 SUB=$1
+SES=$2
 
 module purge
 module load singularity/latest
@@ -19,5 +20,5 @@ singularity run --cleanenv -B /projects/b1108:/projects/b1108/ \
 /projects/b1108/software/singularity_images/kat_test/mriqc-23.0.1.simg \
 -v /projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/ \
 -v /projects/b1108/studies/transitions2/data/processed/neuroimaging/mriqc/$SUB/ \
-participant --participant-label ${1}
+participant --participant-label ${1} 
 

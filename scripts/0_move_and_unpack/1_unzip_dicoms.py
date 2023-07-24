@@ -2,11 +2,14 @@ import os
 import glob
 import json
 import shutil
+import sys
+
+ses = sys.argv[1]
 
 ##Deal with that we're in an infinite loop
-compressed_path = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/compressed/"
+compressed_path = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/compressed/" + ses + "/"
 compressed_files = glob.glob(compressed_path + "*" )
-uncompressed_path = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/uncompressed/"
+uncompressed_path = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/uncompressed/" + ses + "/"
 uncompressed_files = glob.glob(uncompressed_path + "*" )
 problem_subs = ["t1135", "t1120", "t1123", "t1140"]
 #print(uncompressed_files)
