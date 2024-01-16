@@ -10,7 +10,10 @@ echo $SES
 
 for DIR in /projects/b1108/studies/transitions2/data/raw/neuroimaging/dicoms/uncompressed/$SES/*; do
     #these participants came in two parts and get special treatment
-    if [ $(basename $DIR) != "t1140" ] && [ $(basename $DIR) != "t1123" ] && [ $(basename $DIR) != "t1135" ] && [ $(basename $DIR) != "t1120" ]; then
+    if [ $(basename $DIR) != "t1120a" ] && [ $(basename $DIR) != "t1120b" ] && \
+    [ $(basename $DIR) != "t1135a" ] && [ $(basename $DIR) != "t1135b" ] && [ $(basename $DIR) != "t1023a" ] && \
+    [ $(basename $DIR) != "t1040a" ] && [ $(basename $DIR) != "t1040b" ] && [ $(basename $DIR) != "t1191a" ] && \
+    [ $(basename $DIR) != "t1191b" ]; then
         BASE_DIR=$(basename $DIR)
         #[ -d "$dirs" ] && [ -n "$(ls -A $dirs)" ]
         if [ ! -d "/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-$BASE_DIR/$SES/anat" ]; then

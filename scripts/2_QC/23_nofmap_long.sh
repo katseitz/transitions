@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
 #SBATCH -A p31833
-#SBATCH -p normal
-#SBATCH -t 48:00:00
+#SBATCH -p long
+#SBATCH -t 72:00:00
 #SBATCH --mem=35G
 #SBATCH -J fno_fmap
 

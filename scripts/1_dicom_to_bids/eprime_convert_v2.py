@@ -84,7 +84,7 @@ def file_to_df(text_file):
     #print(df.head(40))
     return df
     
-def df_to_timing_txt(df, mid2=0):
+def df_to_timing_txt(df, subject, mid2=0):
     #MID RUN 1
     tgt_on = df.loc[df[0] == 'Run1Tgt.OnsetTime'][1].reset_index() #     txt.Var2(find(contains(txt.Var1,'Run1Tgt.OnsetTime'))); 
     tgt_dur = df.loc[df[0] == 'TgtDur'][1].reset_index()  #txt.Var2(find(contains(txt.Var1,'TgtDur')));
@@ -110,8 +110,11 @@ def df_to_timing_txt(df, mid2=0):
     fbk_dur = df.loc[df[0] == 'Run1Fbk.Duration'][1].astype(int).reset_index() #txt.Var2(find(contains(txt.Var1,'Run1Fbk.Duration')));
     
     #Was the participant accurate?
-    print(type(rt1))
+    #print(type(rt1))
     acc1 = ~(rt1.isna())  #~isnan(rt1);
+    print(type(acc1))
+    acc1 = acc1.replace({True: 'Hit', False: 'Miss'})
+
     rwd = df.loc[df[0] == 'Rwd'][1].reset_index() #txt.Var2(find(contains(txt.Var1,'Rwd'))); 
     
     # what was the target rt?
@@ -119,22 +122,40 @@ def df_to_timing_txt(df, mid2=0):
     #target_RT1(target_RT1 < 0) = []; TODO
     
     trial_type1 = df.loc[df[0] == 'RunList1'][1]+ "-" #strcat(string(txt.Var2(find(contains(txt.Var1,'RunList1')))),'-');
-    trial_type1 = trial_type1.replace('1-','Run1 Win $5.00') #replace(trial_type1,'1-','Run1 Win $5.00');
-    trial_type1 = trial_type1.replace('2-','Run1 Win $1.50')#replace(trial_type1,'2-','Run1 Win $1.50');
-    trial_type1 = trial_type1.replace('3-','Run1 Win $0.00')#replace(trial_type1,'3-','Run1 Win $0.00');
-    trial_type1 = trial_type1.replace('4-','Run1 Lose $5.00')#replace(trial_type1,'4-','Run1 Lose $5.00');
-    trial_type1 = trial_type1.replace('5-','Run1 Lose $1.50')#replace(trial_type1,'5-','Run1 Lose $1.50');
-    trial_type1 = trial_type1.replace('6-','Run1 Lose $0.00')#replace(trial_type1,'6-','Run1 Lose $0.00');
+    trial_type1 = trial_type1.replace('1-','win_5') #replace(trial_type1,'1-','Run1 Win $5.00');
+    trial_type1 = trial_type1.replace('2-','win_1.5')#replace(trial_type1,'2-','Run1 Win $1.50');
+    trial_type1 = trial_type1.replace('3-','win_0')#replace(trial_type1,'3-','Run1 Win $0.00');
+    trial_type1 = trial_type1.replace('4-','lose_5')#replace(trial_type1,'4-','Run1 Lose $5.00');
+    trial_type1 = trial_type1.replace('5-','lose_1.5')#replace(trial_type1,'5-','Run1 Lose $1.50');
+    trial_type1 = trial_type1.replace('6-','lose_0')#replace(trial_type1,'6-','Run1 Lose $0.00');
     trial_type1 = trial_type1.reset_index()
     
-    final_MID1=pd.concat([cue_on1[1],trial_duration1[1],rt1[1],acc1[1],fbk_on1[1], trial_type1[1]],axis=1)
-    final_MID1.columns =['onset','duration','response_time','correct','feedback_onset', 'trial_type']
-    print(final_MID1)
+    #final_MID=pd.concat([cue_on1[1],[trial_duration1[1]],rt1[1],acc1[1],fbk_on1[1], trial_type1[1]],axis=1)
+    num_trials = len(cue_on1[1])
+    #Anticipation Phase
+    final_MID_ant=pd.concat([cue_on1[1], "ant_" + trial_type1[1]], axis = 1)
+    final_MID_ant["duration"] = 2
+    final_MID_ant.columns =['onset', 'trial_type', 'duration']
+
+    #Reward Phase
+    #TODO: all showing up as either hit or miss, not reflecting actual values
+    #T1040 has a miss on the 9th trial 
+    final_MID_rew=pd.concat([fbk_on1[1]],axis=1)
+    final_MID_rew['trial_type'] = "rew_"+trial_type1[1]+ "_" + acc1[1]
+    final_MID_rew["duration"] = 2
+    final_MID_rew.columns =['onset', 'trial_type', 'duration']
+    print(final_MID_rew)
+
+    #Merge the two
+    final_MID = final_MID_ant.append(final_MID_rew, ignore_index=True)
+    final_MID.columns =['onset', 'trial_type', 'duration']
+    #print(final_MID)
     
     #print(trial_type1)
      #MID RUN 2
     if(mid2):
-        
+        #TODO: figure out timing of cue onset and fbk onset. 
+        #Right now it is relative to the start of R2
         cue_on2 = df.loc[df[0] == 'Run2Cue.OnsetTime'][1].astype(int).reset_index() #txt.Var2(find(contains(txt.Var1,'Run2Cue.OnsetTime')));
         cue_on2 = (cue_on2 - int(df.loc[df[0] == 'Run2Fix.OnsetTime'].iloc[0][1])) / 1000   
         cue_iti2 = df.loc[df[0] == 'Run2Dly3.OnsetTime'][1].astype(int).reset_index() #txt.Var2(find(contains(txt.Var1,'Run2Dly3.OnsetTime')));
@@ -147,29 +168,54 @@ def df_to_timing_txt(df, mid2=0):
         fbk_on2 = df.loc[df[0] == 'Run2Fbk.OnsetTime'][1].astype(int).reset_index()
         fbk_on2 = (fbk_on2 -  int(df.loc[df[0] == 'Run2Fix.OnsetTime'].iloc[0][1])) / 1000  
         acc2 = ~(rt2.isna())
-        
+        acc2 = acc2.replace({True: 'Hit', False: 'Miss'})
         #target rt
         target_RT2 = df.loc[df[0] == 'Run2Tgt.Duration'][1].astype(int).reset_index() 
         #TODO target_RT2(target_RT2 < 0) = [];
         
         #trial types
         trial_type2 = df.loc[df[0] == 'RunList1'][1]+ "-" #strcat(string(txt.Var2(find(contains(txt.Var1,'RunList1')))),'-');
-        trial_type2 = trial_type2.replace('1-','Run2 Win $5.00') #replace(trial_type2,'1-','Run1 Win $5.00');
-        trial_type2 = trial_type2.replace('2-','Run2 Win $1.50')#replace(trial_type2,'2-','Run1 Win $1.50');
-        trial_type2 = trial_type2.replace('3-','Run2 Win $0.00')#replace(trial_type2,'3-','Run1 Win $0.00');
-        trial_type2 = trial_type2.replace('4-','Run2 Lose $5.00')#replace(trial_type2,'4-','Run1 Lose $5.00');
-        trial_type2 = trial_type2.replace('5-','Run2 Lose $1.50')#replace(trial_type2,'5-','Run1 Lose $1.50');
-        trial_type2 = trial_type2.replace('6-','Run2 Lose $0.00')#replace(trial_type2,'6-','Run1 Lose $0.00');
+        trial_type2 = trial_type2.replace('1-','win_5') #replace(trial_type2,'1-','Run1 Win $5.00');
+        trial_type2 = trial_type2.replace('2-','win_1.5')#replace(trial_type2,'2-','Run1 Win $1.50');
+        trial_type2 = trial_type2.replace('3-','win_0')#replace(trial_type2,'3-','Run1 Win $0.00');
+        trial_type2 = trial_type2.replace('4-','lose_5')#replace(trial_type2,'4-','Run1 Lose $5.00');
+        trial_type2 = trial_type2.replace('5-','lose_1.5')#replace(trial_type2,'5-','Run1 Lose $1.50');
+        trial_type2 = trial_type2.replace('6-','lose_0')#replace(trial_type2,'6-','Run1 Lose $0.00');
         trial_type2 = trial_type2.reset_index()
         
-        final_MID2=pd.concat([cue_on2[1],trial_duration2[1],rt2[1],acc2[1],fbk_on2[1], trial_type2[1]],axis=1)
-        final_MID2.columns =['onset','duration','response_time','correct','feedback_onset', 'trial_type']
-        print(final_MID2)
+        num_trials = len(cue_on2[1])
+        #Anticipation Phase
+        final_MID2_ant=pd.concat([cue_on2[1] + 1000, "ant_" + trial_type2[1]], axis = 1)
+        final_MID2_ant["duration"] = 2
+        final_MID2_ant.columns =['onset', 'trial_type', 'duration']
+
+        #Reward Phase
+        #TODO: fix acc here too... same issue. 
+        final_MID2_rew=pd.concat([fbk_on2[1] + 1000],axis=1)
+        final_MID2_rew['trial_type'] = "rew_"+trial_type2[1]+ "_" + acc2[1]
+        final_MID2_rew["duration"] = 2
+        final_MID2_rew.columns =['onset', 'trial_type', 'duration']
+        
+        #Merge the two
+        final_MID = final_MID.append(final_MID2_ant, ignore_index=True)
+        final_MID = final_MID.append(final_MID2_rew, ignore_index=True)
+        final_MID.columns =['onset', 'trial_type', 'duration']
+        final_MID = final_MID.iloc[:,[0,2,1]]
+        final_MID = final_MID.sort_values(by = 'onset') 
+        
+        
+        final_MID.to_csv(basedir2 + subject + '/ses-1/func/' + subject + '_task-MID_events.tsv', sep="\t", index=False) 
+        #print(final_MID)
+        
+        #final_MID2=pd.concat([cue_on2[1],trial_duration2[1],rt2[1],acc2[1],fbk_on2[1], trial_type2[1]],axis=1)
+        #final_MID2.columns =['onset','duration','response_time','correct','feedback_onset', 'trial_type']
+        #print(final_MID2)
 
         
 def happy_mid(path):
+    subject = path.split("/")[-4]
     df = file_to_df(path)
-    df_to_timing_txt(df, 1)
+    df_to_timing_txt(df, subject, 1)
 
 #for i in range(40): 
 #    print(formated[i])    
