@@ -1,0 +1,6 @@
+{
+    "fmap": {"datatype": "fmap", "session": "2"},
+    "bold": {"datatype": "func", "session": "2"},
+    "t1w": {"datatype": "anat", "suffix": "T1w", "session": "2"}
+
+  }
