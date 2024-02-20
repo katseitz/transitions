@@ -3,6 +3,7 @@ import glob
 from nilearn.glm.second_level import SecondLevelModel
 from nilearn.image import threshold_img
 from nilearn.glm import threshold_stats_img
+from nilearn.image import resample_to_img
 ### EXAMPLE SCRIPT/DOCUMENTATION
 #https://nilearn.github.io/dev/auto_examples/05_glm_second_level/plot_thresholding.html
 
@@ -17,8 +18,9 @@ def second_level(ses):
         print('working on second level for ' + contrast)
         #Get the set of individual statstical maps (contrast estimates)
         contrast_tmaps = glob.glob(mid_dir + '*/' + ses + "/*" + contrast + '*')
+        #contrast_tmaps = contrast_tmaps[:10]
         # define trivial design matrix for model for one sample t-test, with all 1s
-        n_samples = len(files)
+        n_samples = len(contrast_tmaps)
         design_matrix = pd.DataFrame([1] * n_samples, columns=["intercept"])
         
         # Next, we specify and estimate the model.
@@ -32,10 +34,12 @@ def second_level(ses):
         # (equivalent to p < 0.001), cluster size > 10 voxels.
         threshold_img(
         z_map,
-        threshold=3.29,
+        threshold=2.3, #3.29 is pub accepted
         cluster_threshold=10,
         two_sided=True,
         )
+        
+        z_map.to_filename('contrast_' +ses+'_task-mid_' + contrast + '_tmap.nii.gz')
         
 def main():
     ses = 'ses-1'
