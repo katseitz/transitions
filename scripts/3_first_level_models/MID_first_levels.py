@@ -1,7 +1,7 @@
 ### This script conducts the post-processing steps after fmriprep for rest
 ###
-### kat
-### January 2024
+### kat seitz
+### January - April 2024
 
 # Python version: 3.8.4
 import os
@@ -13,6 +13,7 @@ import numpy as np
 import csv
 import matplotlib.pyplot as plt
 
+from nilearn.datasets import load_mni152_brain_mask
 from nilearn.input_data import NiftiLabelsMasker #0.8.1
 from nilearn.glm.first_level import FirstLevelModel
 from nilearn.glm.first_level import make_first_level_design_matrix
@@ -39,8 +40,9 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
         #Load in MID file, and mask
         file_mid = os.path.join(funcindir, [x for x in flist if ('preproc_bold.nii.gz' in x and 'task-mid_run-0' + str(i) in x)][0])
         mid_img = nib.load(file_mid)
-        file_mid_mask = os.path.join(funcindir, [x for x in flist if ('brain_mask.nii.gz' in x and 'task-mid_run-0' + str(i) in x)][0])
-        mid_mask_img = nib.load(file_mid_mask)
+        #file_mid_mask = os.path.join(funcindir, [x for x in flist if ('brain_mask.nii.gz' in x and 'task-mid_run-0' + str(i) in x)][0])
+        #mid_mask_img = nib.load(file_mid_mask)
+        mid_mask_img = load_mni152_brain_mask(resolution=None, threshold=0.2)
         # Load confounds for MID and read in as pandas df
         confounds_mid_path = os.path.join(funcindir, [x for x in flist if ('task-mid_run-0' + str(i) + '_desc-confounds_timeseries.tsv' in x)][0])
         confounds_mid_df = pd.read_csv(confounds_mid_path, sep='\t')
@@ -81,7 +83,7 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
         confounds_mid_df = confounds_mid_df.fillna(0)
 
         # Add nuisance regressors for high motion TRs
-        regressed_TR = set()
+        regressed_TR = set() #heheh lookups are o(1)
         num_TRs = len(confounds_mid_df) #get number of frames
         counter = 0
         for index in confounds_mid_df.index:
@@ -98,17 +100,19 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
         print(sub + " regressed: " + str(len(regressed_TR)))
         tr_list.append([sub, ses, str(num_TRs), len(regressed_TR)])
 
-        ##### Temporal bandpass filtering + Nuisance regression again
+        ##### Temporal bandpass filtering + Nuisance regression
         mid_band = image.clean_img(mid_img, detrend=False, standardize=False, t_r=tr,
                                 confounds=confounds_mid_df[final_confounds],
                                 low_pass=0.08, high_pass=0.009)
+        
+        mid_band.to_filename(sesoutdir+'/'+sub+'_'+ses+'_task-MID_run-0' + str(i) + '_final.nii.gz')
         
         #### Define First Level Model 
         mid_model = FirstLevelModel(tr,
                             mask_img=mid_mask_img,
                             standardize=False, 
                             hrf_model='spm', # 
-                            smoothing_fwhm=4) #TODO lab meeting
+                            smoothing_fwhm=4) 
          
         #### Fit First Level Model with Given Participant and for each contrast
         print("Fitting a GLM")
@@ -122,7 +126,7 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
             contrasts = ["ant_win_5or15 - ant_win_0",
                          "ant_lose_5or15 - ant_lose_0",
                          "ant_win_5or15 - ant_lose_5or15"]
-         #generate contrasts and save   
+        #generate contrasts and save   
         for contrast in contrasts:
             mid_t_map = mid_model.compute_contrast((contrast), output_type="stat")
             contrast_name = contrast.replace(" - ", "_vs_").replace(".", "")
@@ -131,8 +135,9 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
         # plot the contrasts as soon as they're generated
         # the display is overlaid on the mean fMRI image
         # a threshold of 3.0 is used, more sophisticated choices are possible
-        mean_image = mean_img(mid_img)
+       
         '''
+        mean_image = mean_img(mid_img)
         plotting.plot_stat_map(
             mid_t_map,
             bg_img=mean_image,
@@ -150,8 +155,8 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
 
 def main():
     ses = "ses-1" #bids ses-1
-    indir = '/projects/b1108/studies/transitions2/data/processed/neuroimaging/fmriprep_ses-1/'
-    outdir = '/projects/b1108/studies/transitions2/data/processed/neuroimaging/MID_processing/'
+    indir = '/projects/b1108/studies/transitions2/data/processed/neuroimaging/ses-1_v23_2_0_syn/'
+    outdir = '/projects/b1108/studies/transitions2/data/processed/neuroimaging/MID_processing_23_syn/'
     subject = os.scandir(indir)
     tr_counts = [["ID", "run", "original_shape", "cleaned_shape"]]
     
@@ -160,7 +165,7 @@ def main():
             print(sub.name)
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
-            #if they have a single rest run
+            #if they have a single MID run
             preproc_rest = os.path.join(funcindir, sub.name +'_'+ses+'_task-mid_run-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz')
             if(os.path.exists(preproc_rest)):
                 os.makedirs(os.path.join(outdir, sub.name, ses), exist_ok=True)

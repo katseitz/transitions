@@ -7,7 +7,7 @@ from nilearn.image import resample_to_img
 ### EXAMPLE SCRIPT/DOCUMENTATION
 #https://nilearn.github.io/dev/auto_examples/05_glm_second_level/plot_thresholding.html
 
-mid_dir = '/projects/b1108/studies/transitions2/data/processed/neuroimaging/MID_processing/'
+mid_dir = '/projects/b1108/studies/transitions2/data/processed/neuroimaging/MID_processing_23_2_fmriprep/'
 
 def second_level(ses):
     contrasts = ["ant_win_5or15_vs_ant_win_0",
@@ -39,7 +39,7 @@ def second_level(ses):
         two_sided=True,
         )
         
-        z_map.to_filename('contrast_' +ses+'_task-mid_' + contrast + '_tmap.nii.gz')
+        z_map.to_filename('SYNcontrast_' +ses+'_task-mid_' + contrast + '_tmap.nii.gz')
         
 def main():
     ses = 'ses-1'
