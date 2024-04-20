@@ -21,4 +21,3 @@ singularity run --cleanenv -B /projects/b1108:/projects/b1108/ \
 -v /projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/ \
 -v /projects/b1108/studies/transitions2/data/processed/neuroimaging/mriqc/$SUB/ \
 participant --participant-label ${1} 
-
