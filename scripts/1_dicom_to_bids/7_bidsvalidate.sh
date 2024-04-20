@@ -10,9 +10,11 @@
 #SBATCH --mail-type=FAIL                                  ## you can receive e-mail alerts from SLURM when your job begins and when your job finishes (completed, failed, etc)
 #SBATCH --mail-user=katharina.seitz@northwestern.edu    ## your email
 
+module load singularity/latest
+
 singularity exec --writable-tmpfs --cleanenv \
-  -B /projects/b1108/studies/transitions2/data/raw/neuroimaging/bids \
+  -B /projects/b1108/studies/TEAM/data/raw/neuroimaging/bids \
   /projects/b1108/software/singularity_images/validator_v1.9.3.sif \
-  bids-validator /projects/b1108/studies/transitions2/data/raw/neuroimaging/bids \
+  bids-validator /projects/b1108/studies/TEAM/data/raw/neuroimaging/bids \
   --verbose
   

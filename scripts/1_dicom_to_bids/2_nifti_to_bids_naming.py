@@ -6,22 +6,9 @@ import json
 
 
 participant = sys.argv[1]
-ses = sys.argv[2]
+ses = 'ses-1'
 
-'''
-    Removes participant name from file names. 
-            Parameters:
-                    a) participant in f1XXXX format
-                    b) directory up to and inclduding ses-XX
-            Returns:
-                    none
-'''
-def remove_name(participant, directory):
-    for file in os.listdir(directory):
-        print(file)
-        parts = file.split("--", 1)
-        new_name = participant + "--" + parts[-1]
-        os.rename(directory + "/" + file, directory + "/" + new_name) 
+
 '''
     Checks for func, beh, anat, and fmap directories
     Creates them, if they do not exist.
@@ -41,7 +28,7 @@ def makedir(participant, directory):
         os.mkdir(directory + "/fmap/")
 
 '''
-    Renames files all per the file renaming document from Nina
+    Renames files all per the file renaming document
             Parameters:
                     a) participant in f1XXXX format
                     b) directory up to and inclduding ses-XX
@@ -52,11 +39,14 @@ def rename_partic(participant, directory):
     #search using glob on the pattern that Nina in the doc 
     print(participant + " " + directory)
     print("in rename partic")
+    
+    #TODO HERE YOU MIGHT CHANGE THE WILDCARD PATTERN "--FMAP1--GR--?_ph*"
     files = glob.glob(directory + "/" + participant + "--FMAP1--GR--?_ph*")+ glob.glob(directory + "/" + participant + "--FMAP1*ph*")
     for file in files:
         print(file)
         parts = file.split(".", 1)
-        new_name = "sub-" + participant + "_" + ses + "_phase1." + parts[1]
+        #TODO HERE YOU MIGHT CHANGE THE actual name of the file
+        new_name = "sub-" + participant + "_" + ses + "_phase1." + parts[1] 
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
     files = glob.glob(directory + "/" + participant + "--FMAP2--GR--?_ph*") + glob.glob(directory + "/" + participant + "--FMAP2*ph*")
@@ -73,41 +63,23 @@ def rename_partic(participant, directory):
         new_name = "sub-" + participant + "_" + ses + "_magnitude1." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
-    files = glob.glob(directory + "/" + participant + "--FMAP2--GR--*") + glob.glob(directory + "/" + participant + "--FMAP2*")
-    for file in files:
-        print(file)
-        parts = file.split(".", 1)
-        new_name = "sub-" + participant + "_" + ses + "_magnitude2." + parts[1]
-        print(directory + "/" + new_name)
-        os.rename(file, directory + "/" + new_name) 
-    #MID 1
+
+    #GNG 
+    #TODO change wild card pattern for GNG task
     files = glob.glob(directory + "/" + participant + "--MID1--EP_RM--*") + glob.glob(directory + "/" + participant + "--MID1*")
     for file in files:
         print(file)
         parts = file.split(".", 1)
         if(parts[1] == "json"):
             json_obj = json.load(open(file, 'r'))
-            json_obj['TaskName'] = 'mid'
+            json_obj['TaskName'] = 'mid' #TODO change mid to GNG
             with open(file, 'w') as f:
                 json.dump(json_obj, f)
+        #TODO change mid to GNG
         new_name = "sub-" + participant + "_" + ses + "_task-mid_run-01_bold." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
-    #MID2
-    files = glob.glob(directory + "/" + participant + "--MID2--EP_RM--*") + glob.glob(directory + "/" + participant + "--MID2*")
-    for file in files:
-        print(file)
-        parts = file.split(".", 1)
-        if(parts[1] == "json"):
-            json_obj = json.load(open(file, 'r'))
-            json_obj['TaskName'] = 'mid'
-            with open(file, 'w') as f:
-                json.dump(json_obj, f)
-        new_name = "sub-" + participant + "_" + ses + "_task-mid_run-02_bold." + parts[1]
-        print(directory + "/" + new_name)
-        os.rename(file, directory + "/" + new_name)  
-
-    #REST1
+    #REST
     files = glob.glob(directory + "/" + participant + "--REST1--EP_RM--*") + glob.glob(directory + "/" + participant + "--REST1*")
     for file in files:
         print(file)
@@ -118,45 +90,6 @@ def rename_partic(participant, directory):
             with open(file, 'w') as f:
                 json.dump(json_obj, f)
         new_name = "sub-" + participant + "_" + ses + "_task-rest_run-01_bold." + parts[1]
-        print(directory + "/" + new_name)
-        os.rename(file, directory + "/" + new_name) 
-    #REST2
-    files = glob.glob(directory + "/" + participant + "--REST2--EP_RM--*") + glob.glob(directory + "/" + participant + "--REST2*")
-    for file in files:
-        print(file)
-        parts = file.split(".", 1)
-        if(parts[1] == "json"):
-            json_obj = json.load(open(file, 'r'))
-            json_obj['TaskName'] = 'rest'
-            with open(file, 'w') as f:
-                json.dump(json_obj, f)
-        new_name = "sub-" + participant + "_" + ses + "_task-rest_run-02_bold." + parts[1]
-        print(directory + "/" + new_name)
-        os.rename(file, directory + "/" + new_name)  
-    #REST3
-    files = glob.glob(directory + "/" + participant + "--REST3--EP_RM--*") + glob.glob(directory + "/" + participant + "--REST3*")
-    for file in files:
-        print(file)
-        parts = file.split(".", 1)
-        if(parts[1] == "json"):
-            json_obj = json.load(open(file, 'r'))
-            json_obj['TaskName'] = 'rest'
-            with open(file, 'w') as f:
-                json.dump(json_obj, f)
-        new_name = "sub-" + participant + "_" + ses + "_task-rest_run-03_bold." + parts[1]
-        print(directory + "/" + new_name)
-        os.rename(file, directory + "/" + new_name) 
-    #REST4
-    files = glob.glob(directory + "/" + participant + "--REST4--EP_RM--*") + glob.glob(directory + "/" + participant + "--REST4*")
-    for file in files:
-        print(file)
-        parts = file.split(".", 1)
-        if(parts[1] == "json"):
-            json_obj = json.load(open(file, 'r'))
-            json_obj['TaskName'] = 'rest'
-            with open(file, 'w') as f:
-                json.dump(json_obj, f)
-        new_name = "sub-" + participant + "_" + ses + "_task-rest_run-04_bold." + parts[1]
         print(directory + "/" + new_name)
         os.rename(file, directory + "/" + new_name) 
     #T1W
@@ -203,8 +136,9 @@ def move_to_folders(participant, directory):
 
 def main():
     key = participant
-    value = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-" + participant + "/" + ses 
-    remove_name(key, value)
+    
+    #TODO change this path 
+    value = "/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/sub-" + participant + "/" + ses
     makedir(key, value)
     rename_partic(key, value)
     move_to_folders(key, value)
