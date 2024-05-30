@@ -127,6 +127,7 @@ def df_to_timing_txt(df, subject, mid2=0):
     MID_ant.columns =['onset', 'trial_type', 'duration']
     
     #### REWARD PHASE
+    #TODO: Run1Tgt.ACCfeedback
     fbk_on1 = df.loc[df[0] == 'Run1Fbk.OnsetTime'][1].astype(int).reset_index() 
     fbk_on1 = (fbk_on1 -  int(df.loc[df[0] == 'Run1Fix.OnsetTime'].iloc[0][1])) / 1000 
     rt1 = df.loc[df[0] == 'Run1Tgt.RT'][1].astype(int).reset_index() #response times to guage accuracy

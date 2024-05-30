@@ -26,7 +26,6 @@ from cubic_interp import cubic_interp
 
 def postproc_rest(sub, ses, funcindir, sesoutdir):
     tr_list = []
-    # Location of the pre-processed fMRI & maski
     #if(True or not(os.path.exists(sesoutdir+'/'+sub+'_'+ses+'_task-rest_final.nii.gz'))):
     if(True):    
         print("here!!!!")
@@ -34,6 +33,7 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
         print(funcindir)
         i = 1
         while(i <= len(glob.glob(funcindir+"*ses-1_task-rest_run-0*_space-MNI152NLin6Asym_desc-preproc_bold.json"))):
+            
             file_rest = os.path.join(funcindir, [x for x in flist if ('_space-MNI152NLin6Asym_desc-preproc_bold.nii.gz' in x and 'task-rest_run-0' + str(i) in x)][0])
             file_rest_mask = os.path.join(funcindir, [x for x in flist if ('_space-MNI152NLin6Asym_desc-brain_mask.nii.gz' in x and 'task-rest_run-0' + str(i) in x)][0])
             rest_mask_img = nib.load(file_rest_mask)
@@ -50,7 +50,7 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
 
             # Get TRs
             rest_tr = param_rest_df['RepetitionTime']
-            
+            '''
             #### Select confound columns
             # https://www.sciencedirect.com/science/article/pii/S1053811917302288
             # Removed csf and white_matter because too collinear with global_signal
@@ -80,24 +80,32 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
             print(len(confounds_rest_df.index)) 
             print("num censored: ") 
             print((~confounds_rest_df['ffd_good']).values.sum())
-
+            #i = i + 1 #COMMENT OUT LATER JUST FOR TESTING
+            
             ##### Censor the TRs where fFD > .3
             rest_cen, confounds_rest_df = remove_trs(rest_reg, confounds_rest_df, replace=False)
+            print("after censoring 1")
+            print(rest_cen.shape)
 
             ##### Interpolate over these TRs
             rest_int = cubic_interp(rest_cen, rest_mask_img, rest_tr, confounds_rest_df)
-
+            print("after interpolation 1")
+            print(rest_int.shape)
             ##### Temporal bandpass filtering + Nuisance regression again
             rest_band = image.clean_img(rest_int, detrend=False, standardize=False, t_r=rest_tr,
                                     confounds=confounds_rest_df[final_confounds],
                                     low_pass=0.08, high_pass=0.009)
-
+            print("after bandpass")
+            print(rest_band.shape)
+            
+            
             ##### Censor volumes identified as having fFD > .1
             rest_cen2, confounds_rest_df = remove_trs(rest_band, confounds_rest_df, replace=False)
+            print("after censoring 2")
+            print(rest_cen2.shape)
             rest_cen2.to_filename(sesoutdir+'/'+sub+'_'+ses+'_task-rest_run-0' + str(i) + '_fd-1_final.nii.gz')
             i = i + 1
-        '''
-            print(i)
+            '''
             rest_cen2 = nib.load(sesoutdir+'/'+sub+'_'+ses+'_task-rest_run-0' + str(i) + '_fd-1_final.nii.gz')
             ##### Run masker for each network in the loop
             networks = ['CEN', 'AS', 'ATTC', 'ER', 'DMN', 'PS', 'FS']
@@ -130,7 +138,6 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
                 np.savetxt(sesoutdir+sub+'_'+ses+'_task-rest_run-0' + str(i) + '_' + network + '_network_timeseries.csv',
                 rest_time_series, delimiter=',')
 
-
                 # Correlate every column with every other column
                 corr_matrix = np.corrcoef(rest_time_series, rowvar=False)
 
@@ -147,7 +154,6 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
                 tr_list.append([sub, ses, i, rest_cen2.shape])
             i = i+1
             print("updated i " + str(i))
-        '''
         return tr_list
         
 
@@ -159,9 +165,8 @@ def main():
     tr_counts = [["ID", "ses", "run", "cleaned_shape"]]
     #subjects = glob.glob('/projects/b1108/studies/transitions2/data/processed/neuroimaging/ses-1_v23_2_0_nofmap/sub-t102*')
     for sub in subjects:
-        print(sub)
         if("sub-" in sub.name and not(".html" in sub.name)):
-            print(sub.name)
+            #print(sub.name)
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
             preproc_rest = os.path.join(funcindir, sub.name +'_'+ses+'_task-rest_run-01_space-MNI152NLin6Asym_desc-preproc_bold.json')
@@ -173,10 +178,10 @@ def main():
                         tr_counts.append(val)
                 except Exception as e:
                     print(e)
-        with open('transitions_REST_fd-1_TRs.csv', 'w') as myfile:
-            wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-            for row in tr_counts:
-                wr.writerow(row)
+        #with open('transitions_REST_fd-1_TRs.csv', 'w') as myfile:
+        #    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+        #    for row in tr_counts:
+        #       wr.writerow(row)
         '''
         elif(not '.html' in sub):
             print("here")

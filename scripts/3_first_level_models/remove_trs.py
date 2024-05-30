@@ -29,6 +29,8 @@ def remove_trs(img, confounds_df, replace=True):
         confounds_df['keep_ffd'] = keep_array
     else:
         keep_array = confounds_df['keep_ffd'].to_list()
+        print("num censored in remove script: ") 
+        print((~confounds_df['ffd_good']).values.sum())
     # NA out bad TRs
     if replace == True:
         for i in range(0, img.shape[3]):
