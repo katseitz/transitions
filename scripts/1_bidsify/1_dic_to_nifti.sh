@@ -4,6 +4,8 @@ echo $SUB
 SES=$2
 echo $SES
 
+#note, depending on the project, scan_folder wild card depth might change depening on
+#file organization
 scan_folders=/Users/katharinaseitz/Documents/dicom_conversions/dicoms/uncompressed/$SUB/*/*
 echo $scan_folders
 
