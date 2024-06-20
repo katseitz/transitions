@@ -50,7 +50,7 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
 
             # Get TRs
             rest_tr = param_rest_df['RepetitionTime']
-            '''
+            
             #### Select confound columns
             # https://www.sciencedirect.com/science/article/pii/S1053811917302288
             # Removed csf and white_matter because too collinear with global_signal
@@ -104,8 +104,8 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
             print("after censoring 2")
             print(rest_cen2.shape)
             rest_cen2.to_filename(sesoutdir+'/'+sub+'_'+ses+'_task-rest_run-0' + str(i) + '_fd-1_final.nii.gz')
-            i = i + 1
-            '''
+            #i = i + 1
+            
             rest_cen2 = nib.load(sesoutdir+'/'+sub+'_'+ses+'_task-rest_run-0' + str(i) + '_fd-1_final.nii.gz')
             ##### Run masker for each network in the loop
             networks = ['CEN', 'AS', 'ATTC', 'ER', 'DMN', 'PS', 'FS']
@@ -165,7 +165,7 @@ def main():
     tr_counts = [["ID", "ses", "run", "cleaned_shape"]]
     #subjects = glob.glob('/projects/b1108/studies/transitions2/data/processed/neuroimaging/ses-1_v23_2_0_nofmap/sub-t102*')
     for sub in subjects:
-        if("sub-" in sub.name and not(".html" in sub.name)):
+        if("sub-" in sub.name and not(".html" in sub.name) and sub.name == "sub-t1135"):
             #print(sub.name)
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
