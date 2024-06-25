@@ -27,7 +27,7 @@ import scipy.signal as sgnl #1.5.4
 #from get_qual_metrics import get_qual_metrics
 
 ANT_REW = 1 #1 for anticipation, 0 for reward
-events_base = '/projects/b1108/studies/transitions2/data/raw/neuroimaging/bids/'
+events_base = '/projects/b1108/studies/transitions/data/raw/neuroimaging/bids/'
 
 def mid_fl(sub, ses, funcindir, sesoutdir):
     tr_list = []
@@ -155,8 +155,8 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
 
 def main():
     ses = "ses-1" #bids ses-1
-    indir = '/projects/b1108/studies/transitions2/data/processed/neuroimaging/ses-1_v23_2_0_syn/'
-    outdir = '/projects/b1108/studies/transitions2/data/processed/neuroimaging/MID_processing_23_syn/'
+    indir = '/projects/b1108/studies/transitions/data/preprocessed/neuroimaging/fmriprep_23_2_0_nofmap/'
+    outdir = '/projects/b1108/studies/transitions/data/processed/neuroimaging/MID_processing_nofmap/'
     subject = os.scandir(indir)
     tr_counts = [["ID", "run", "original_shape", "cleaned_shape"]]
     

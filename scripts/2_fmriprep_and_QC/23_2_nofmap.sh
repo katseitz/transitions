@@ -21,10 +21,10 @@ IFS=$'\n' read -d '' -r -a input_args < list_subs.txt
 
 #WITHOUT FMAP
 singularity run --cleanenv --containall -B /projects/b1108:/projects/b1108 \
--B /projects/b1108/studies/transitions2/data/processed/neuroimaging:/base \
--B /projects/b1108/studies/transitions2/scripts/2_fmriprep_and_QC:/scripts \
--B /projects/b1108/studies/transitions2/data/processed/neuroimaging/ses-1_v23_2_0_nofmap:/out \
--B /projects/b1108/studies/transitions2/data/raw/neuroimaging/bids:/data \
+-B /projects/b1108/studies/transitions/data/preprocessed/neuroimaging:/base \
+-B /projects/b1108/studies/transitions/scripts/2_fmriprep_and_QC:/scripts \
+-B /projects/b1108/studies/transitions/data/preprocessed/neuroimaging/fmriprep_23_2_0_nofmap:/out \
+-B /projects/b1108/studies/transitions/data/raw/neuroimaging/bids:/data \
 -B /projects/b1108/templateflow:/projects/b1108/templateflow \
 /projects/b1108/software/singularity_images/fmriprep_23.2.0.sif \
 /data /out participant --nthreads 4 --omp-nthreads 3 --mem_mb 30000 \

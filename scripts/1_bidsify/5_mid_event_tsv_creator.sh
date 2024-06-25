@@ -4,8 +4,8 @@ import glob
 import os 
 import traceback
 
-basedir = '/projects/b1108/studies/foundations2/data/raw/neuroimaging/behavioral/'
-basedir2 = '/projects/b1108/studies/foundations2/data/raw/neuroimaging/bids/'
+basedir = '/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/'
+basedir2 = '/projects/b1108/studies/transitions/data/raw/neuroimaging/bids/'
 
 mid = 1
 make_plot = 0
@@ -241,8 +241,8 @@ def df_to_timing_txt(df, subject, mid2=0):
 #MAIN
 
 def main():
-    #dirs = ["/projects/b1108/studies/transitions2/data/raw/neuroimaging/behavioural/sub-t1087"]
-    dirs = glob.glob('/projects/b1108/studies/foundations2/data/raw/neuroimaging/behavioral/*')
+    dirs = ["/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioural/sub-t1087"]
+    #dirs = glob.glob('/projects/b1108/studies/foundations2/data/raw/neuroimaging/behavioral/*')
     for path in dirs :
         try:
             sus_out_files(path)
