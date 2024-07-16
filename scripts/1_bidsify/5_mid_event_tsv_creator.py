@@ -4,16 +4,13 @@ import glob
 import os 
 import traceback
 
-basedir = '/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/'
-basedir2 = '/projects/b1108/studies/transitions/data/raw/neuroimaging/bids/'
+basedir = '/projects/b1108/studies/foundations/data/raw/neuroimaging/behavioral/'
+basedir2 = '/projects/b1108/studies/foundations/data/raw/neuroimaging/bids/'
 
 mid = 1
 make_plot = 0
 save_output = 0
 
-
-fnames = glob.glob(basedir+'sub-*/ses-1/beh/3_MID*2.txt')
-dirs = glob.glob(basedir + '*')
 
 #TO-DO: Do file testing here 
 
@@ -224,17 +221,17 @@ def df_to_timing_txt(df, subject, mid2=0):
 #MAIN
 
 def main():
-    dirs = ["/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioural/sub-t1082"] #ses-1/beh/3_MID_Scanner_HARP_11-1082-2.txt
-    #dirs = glob.glob('/projects/b1108/studies/foundations2/data/raw/neuroimaging/behavioral/*')
+    #dirs = ["/projects/b1108/studies/foundations/data/raw/neuroimaging/behavioural/sub-t1082"] #ses-1/beh/3_MID_Scanner_HARP_11-1082-2.txt
+    dirs = glob.glob('/projects/b1108/studies/foundations/data/raw/neuroimaging/behavioral/*')
 
 
     ##USE THIS CHUNK TO CONVERT ONE SUB's DATA
     ## have to change line 174 depending on which split file it is.
-    e_prime_file = '/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioural/sub-t1082/ses-1/beh/3_MID_Scanner_HARP_11-1082-2.txt'
+    e_prime_file = '/projects/b1108/studies/foundations/data/raw/neuroimaging/behavioral/sub-f12022/ses-1/beh/3_MID_Scanner_HARP_11.15-12022-1.txt'
     df = file_to_df(e_prime_file)
-    df_to_timing_txt(df, 'sub-t1082', 1)
+    df_to_timing_txt(df, 'sub-f12022', 1)
 
-'''
+    '''
     for path in dirs :
         try:
             sus_out_files(path)
