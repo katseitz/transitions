@@ -159,9 +159,10 @@ def main():
     outdir = '/projects/b1108/studies/transitions/data/processed/neuroimaging/MID_processing_nofmap/'
     subject = os.scandir(indir)
     tr_counts = [["ID", "run", "original_shape", "cleaned_shape"]]
+    problem_subs = ["sub-t1087", "sub-t1089", "sub-t1099", "sub-t1122", "sub-t1142"]
     
     for sub in subject:
-        if("sub-" in sub.name and not(".html" in sub.name)):
+        if("sub-" in sub.name and not(".html" in sub.name) and (sub.name in problem_subs)):
             print(sub.name)
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'

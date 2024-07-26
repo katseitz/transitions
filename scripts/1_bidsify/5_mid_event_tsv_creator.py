@@ -227,9 +227,9 @@ def main():
 
     ##USE THIS CHUNK TO CONVERT ONE SUB's DATA
     ## have to change line 174 depending on which split file it is.
-    e_prime_file = '/projects/b1108/studies/foundations/data/raw/neuroimaging/behavioral/sub-f12022/ses-1/beh/3_MID_Scanner_HARP_11.15-12022-1.txt'
+    e_prime_file = '/projects/b1108/studies/foundations/data/raw/neuroimaging/behavioral/sub-f10792/ses-1/beh/3_MID_Scanner_HARP_11-10792-1.txt'
     df = file_to_df(e_prime_file)
-    df_to_timing_txt(df, 'sub-f12022', 1)
+    df_to_timing_txt(df, 'sub-f10792', 1)
 
     '''
     for path in dirs :
