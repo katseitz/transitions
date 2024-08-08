@@ -1,15 +1,15 @@
 #!/usr/bin/bash
 
-#SBATCH -A p31833
+#SBATCH -A p32480
 #SBATCH -p short
 #SBATCH -t 04:00:00
 #SBATCH --mem=25G
 #SBATCH -J qc-tran
 #SBATCH	--mail-type=END,FAIL
-#SBATCH	--mail-user=katharinaseitz@northwestern.edu
+#SBATCH	--mail-user=akash.rathi@northwestern.edu
 
 SUB=$1
-SES=$2
+
 
 module purge
 module load singularity/latest

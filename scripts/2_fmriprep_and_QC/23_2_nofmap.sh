@@ -3,7 +3,7 @@
 #SBATCH -A p31833
 #SBATCH -p normal
 #SBATCH -t 16:00:00
-#SBATCH --array=2-4%10
+#SBATCH --array=1%10
 #SBATCH --job-name="fmriprep_tran_\${SLURM_ARRAY_TASK_ID}"
 #SBATCH --output=fmriprep.%A_%a.out
 #SBATCH --nodes=1
@@ -31,5 +31,5 @@ singularity run --cleanenv --containall -B /projects/b1108:/projects/b1108 \
 --participant-label ${input_args[$SLURM_ARRAY_TASK_ID]} --bids-filter-file /scripts/bids_filter_file_ses-1.json \
 --fs-license-file /projects/b1108/software/freesurfer_license/license.txt \
 --fs-subjects-dir /base/freesurfer_23_2 \
---output-spaces MNI152NLin6Asym \
+--output-spaces MNI152NLin6Asym MNI152NLin2009cAsym\
 -w /base/work  --ignore fieldmaps --skip_bids_validation

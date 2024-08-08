@@ -66,14 +66,14 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
             substring = "ant"
             filter = events['trial_type'].str.contains(substring)
             events = events[~filter]
-            events.replace("rew_win_5_Hit", "rew_win_5or1.5_Hit", inplace=True) #merge 1.5 5 groups
-            events.replace("rew_win_1.5_Hit", "rew_win_5or1.5_Hit", inplace=True)
-            events.replace("rew_win_5_Miss", "rew_win_5or1.5_Miss", inplace=True)
-            events.replace("rew_lose_1.5_Miss", "rew_lose_5or1.5_Miss", inplace=True)
-            events.replace("rew_lose_5_Hit", "rew_lose_5or1.5_Hit", inplace=True) 
-            events.replace("rew_lose_1.5_Hit", "rew_lose_5or1.5_Hit", inplace=True)
-            events.replace("rew_lose_5_Miss", "rew_lose_5or1.5_Miss", inplace=True)
-            events.replace("rew_lose_1.5_Miss", "rew_lose_5or1.5_Miss", inplace=True)
+            events.replace("rew_win_5_Hit", "rew_win_5or15_Hit", inplace=True) #merge 1.5 5 groups
+            events.replace("rew_win_1.5_Hit", "rew_win_5or15_Hit", inplace=True)
+            events.replace("rew_win_5_Miss", "rew_win_5or15_Miss", inplace=True)
+            events.replace("rew_lose_1.5_Miss", "rew_lose_5or15_Miss", inplace=True)
+            events.replace("rew_lose_5_Hit", "rew_lose_5or15_Hit", inplace=True) 
+            events.replace("rew_lose_1.5_Hit", "rew_lose_5or15_Hit", inplace=True)
+            events.replace("rew_lose_5_Miss", "rew_lose_5or15_Miss", inplace=True)
+            events.replace("rew_lose_1.5_Miss", "rew_lose_5or15_Miss", inplace=True)
 
         #### MANAGE CONFOUNDS AND MOTION
         # https://www.sciencedirect.com/science/article/pii/S1053811919306822
@@ -123,9 +123,8 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
                             "ant_lose_5or15 - ant_lose_0",
                             "ant_win_5or15 - ant_lose_5or15"]
         else:
-            contrasts = ["ant_win_5or15 - ant_win_0",
-                         "ant_lose_5or15 - ant_lose_0",
-                         "ant_win_5or15 - ant_lose_5or15"]
+            contrasts = ["rew_win_5or15_Hit - rew_win_5or15_Miss",
+                         "rew_lose_5or15_Miss - rew_lose_5or15_Hit"]
         #generate contrasts and save    
         for contrast in contrasts:
             mid_t_map = mid_model.compute_contrast((contrast), output_type="stat")
@@ -159,10 +158,10 @@ def main():
     outdir = '/projects/b1108/studies/transitions/data/processed/neuroimaging/MID_processing_nofmap/'
     subject = os.scandir(indir)
     tr_counts = [["ID", "run", "original_shape", "regressed_TRs"]]
-    problem_subs = ["sub-t1082"]#["sub-t1087", "sub-t1089", "sub-t1099", "sub-t1122", "sub-t1142"]
+    problem_subs = ["sub-t1120"]#["sub-t1087", "sub-t1089", "sub-t1099", "sub-t1122", "sub-t1142"]
     
     for sub in subject:
-        if("sub-" in sub.name and not(".html" in sub.name)): #and (sub.name in problem_subs)
+        if("sub-" in sub.name and not(".html" in sub.name) and sub.name == "sub-t1120"): #and (sub.name in problem_subs)
             print(sub.name)
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
@@ -172,7 +171,7 @@ def main():
                 os.makedirs(os.path.join(outdir, sub.name, ses), exist_ok=True)
                 sub_counts = mid_fl(sub.name, ses, funcindir, sesoutdir)
                 try:
-                    sub_counts = mid_fl(sub.name, ses, funcindir, sesoutdir)
+                    #sub_counts = mid_fl(sub.name, ses, funcindir, sesoutdir)
                     tr_counts.append(sub_counts[0])
                     tr_counts.append(sub_counts[1])
                 except Exception as e:

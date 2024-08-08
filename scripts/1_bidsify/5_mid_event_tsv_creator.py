@@ -4,8 +4,8 @@ import glob
 import os 
 import traceback
 
-basedir = '/projects/b1108/studies/foundations/data/raw/neuroimaging/behavioral/'
-basedir2 = '/projects/b1108/studies/foundations/data/raw/neuroimaging/bids/'
+basedir = '/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/'
+basedir2 = '/projects/b1108/studies/transitions/data/raw/neuroimaging/bids/'
 
 mid = 1
 make_plot = 0
@@ -221,25 +221,25 @@ def df_to_timing_txt(df, subject, mid2=0):
 #MAIN
 
 def main():
-    #dirs = ["/projects/b1108/studies/foundations/data/raw/neuroimaging/behavioural/sub-t1082"] #ses-1/beh/3_MID_Scanner_HARP_11-1082-2.txt
-    dirs = glob.glob('/projects/b1108/studies/foundations/data/raw/neuroimaging/behavioral/*')
+    #dirs = ["/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioural/sub-t1269"] #ses-1/beh/3_MID_Scanner_HARP_11-1082-2.txt
+    dirs = glob.glob('/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/*')
 
 
     ##USE THIS CHUNK TO CONVERT ONE SUB's DATA
     ## have to change line 174 depending on which split file it is.
-    e_prime_file = '/projects/b1108/studies/foundations/data/raw/neuroimaging/behavioral/sub-f10792/ses-1/beh/3_MID_Scanner_HARP_11-10792-1.txt'
+    e_prime_file = '/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/sub-t1269/ses-1/beh/3_MID_Scanner_HARP_11.15-1269-3.txt'
     df = file_to_df(e_prime_file)
-    df_to_timing_txt(df, 'sub-f10792', 1)
+    df_to_timing_txt(df, 'sub-t1269', 1)
 
-    '''
-    for path in dirs :
-        try:
-            sus_out_files(path)
-        except Exception as e:
-            print("FAILURE: " + path)
-            print(traceback.format_exc())
-    counts.to_csv("MID_trial_types_counts.csv")
-'''
+    
+    #for path in dirs :
+    #    try:
+    #        sus_out_files(path)
+    #   except Exception as e:
+    #       print("FAILURE: " + path)
+    #        print(traceback.format_exc())
+    #counts.to_csv("MID_trial_types_counts.csv")
+
 if __name__ == "__main__":
     main()
     
