@@ -73,14 +73,14 @@ def finish_preproc(sub, ses, run, funcindir, sesoutdir):
 
     #### MANAGE CONFOUNDS AND MOTION
     # https://www.sciencedirect.com/science/article/pii/S1053811919306822
-    confound_vars = ['trans_x','trans_y','trans_z', 'rot_x','rot_y','rot_z', 'global_signal'] # TODO change csf and whitematter 
+    confound_vars = ['trans_x','trans_y','trans_z', 'rot_x','rot_y','rot_z', 'global_signal']
     deriv_vars = ['{}_derivative1'.format(c) for c in confound_vars]
     final_confounds = confound_vars  + deriv_vars
     confounds_mid_df = confounds_mid_df.fillna(0)
 
     # Add nuisance regressors for high motion TRs
-    regressed_TR = set() #heheh lookups are o(1)
-    num_TRs = len(confounds_mid_df) #get number of frames
+    regressed_TR = set() 
+    num_TRs = len(confounds_mid_df) #get number of volumes
     counter = 0
     for index in confounds_mid_df.index:
         # https://doi.org/10.1002/hbm.22307 for fd decision
@@ -92,16 +92,16 @@ def finish_preproc(sub, ses, run, funcindir, sesoutdir):
             regressed_TR.add(counter)
             confounds_mid_df[col_name] = new_reg  #add a new confound column for the high motion TR
         counter = counter + 1
-    print(sub + " total: " + str(num_TRs))
-    print(sub + " regressed: " + str(len(regressed_TR)))
+    #print(sub + " total: " + str(num_TRs))
+    #print(sub + " regressed: " + str(len(regressed_TR)))
     
     ##### Temporal bandpass filtering + Nuisance regression
     mid_band = image.clean_img(mid_img, detrend=True, standardize=False, t_r=tr,
                             confounds=confounds_mid_df[final_confounds],
                             low_pass=0.08, high_pass=0.009)
-    
+    #save preprocessed MID image
     mid_band.to_filename(sesoutdir+'/'+sub+'_'+ses+'_task-mid_run-0' + run + '_final.nii.gz')
-    return [sub, ses, str(num_TRs), len(regressed_TR)]
+    return [sub, run, str(num_TRs), len(regressed_TR)]
 
 
 def first_levels(sub, ses, run, funcindir, sesoutdir, anticipation=1): 
@@ -180,7 +180,6 @@ def first_levels(sub, ses, run, funcindir, sesoutdir, anticipation=1):
                         smoothing_fwhm=4) 
          
     #### Fit First Level Model with Given Participant and for each contrast
-    print("Fitting a GLM")
     mid_model = mid_model.fit(mid_final, events)
     contrasts = []
     if(anticipation):
@@ -243,9 +242,7 @@ def extract_rois(sub, ses, funcindir, sesoutdir):
                     )
     
     series_1 = masker.fit_transform(antgain_vs_antnogain_1)
-    print(series_1)
     series_2 = masker.fit_transform(antgain_vs_antnogain_2)
-    print(series_2)
     VS_Oldham_Rew_AntGain_v_AntNoGain_avg = (series_1[0][0] + series_2[0][0])/2
     
     #VS_Oldham_Rew_AntGain5_v_AntNoGain_avg - current not possible
@@ -332,11 +329,11 @@ def caller(sub, ses, funcindir, sesoutdir):
     i = 1
     tr_list = []
     while(i <= len(glob.glob(funcindir + "*_ses-1_task-mid_run-*_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"))):
-        print("working on run 0" + str(i) + " for participant " + sub)
-        #sub_counts = finish_preproc(sub, ses, str(i), funcindir, sesoutdir)
-        #tr_list.append(sub_counts)
-        #first_levels(sub, ses, str(i), funcindir, sesoutdir, 1)
-        #first_levels(sub, ses, str(i), funcindir, sesoutdir, 0)
+        print("########\nworking on run 0" + str(i) + " for participant " + sub + "\n########")
+        sub_counts = finish_preproc(sub, ses, str(i), funcindir, sesoutdir)
+        tr_list.append(sub_counts)
+        first_levels(sub, ses, str(i), funcindir, sesoutdir, 1)
+        first_levels(sub, ses, str(i), funcindir, sesoutdir, 0)
         i = i+1
     extract = extract_rois(sub, ses, funcindir, sesoutdir)
     return tr_list, extract
@@ -351,8 +348,7 @@ def main():
                 "OFC_Oldham_ConGainHit_v_ConGainMiss_avg", "VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg"]]
     
     for sub in subject:
-        if("sub-t1201" in sub.name and not(".html" in sub.name)):
-            print(sub.name)
+        if("sub-t120*" in sub.name and not(".html" in sub.name)):
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
             #if they have a single MID run
@@ -361,18 +357,18 @@ def main():
                 os.makedirs(os.path.join(outdir, sub.name, ses), exist_ok=True)
                 try:
                     sub_counts, rois_extracted = caller(sub.name, ses, funcindir, sesoutdir)
-                    #tr_counts.append(sub_counts[0])
-                    #tr_counts.append(sub_counts[1])
+                    tr_counts.append(sub_counts[0])
+                    tr_counts.append(sub_counts[1])
                     extracted.append(rois_extracted)
                 except Exception as e:
-                    print(e)
                     print(sub.name + " failed :( ")
-    #with open('transitions_MID_12xx_TRs.csv', 'w') as myfile:
-    #    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-    #    for row in tr_counts:
-    #        wr.writerow(row) 
+                    print(e)
+    with open('transitions_MID_12xx_TRs_08272024.csv', 'w') as myfile:
+        wr = csv.writer(myfile)
+        for row in tr_counts:
+            wr.writerow(row) 
     
-    with open('transitions_MID_ROIS_12xx_TRs.csv', 'w') as myfile:
+    with open('transitions_MID_ROIS_12xx_TR_08272024s.csv', 'w') as myfile:
         wr = csv.writer(myfile)
         for row in extracted:
             wr.writerow(row)
