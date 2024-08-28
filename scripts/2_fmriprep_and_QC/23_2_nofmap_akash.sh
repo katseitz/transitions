@@ -1,9 +1,9 @@
 #!/usr/bin/bash
 
-#SBATCH -A p31833
+#SBATCH -A p32480
 #SBATCH -p normal
 #SBATCH -t 16:00:00
-#SBATCH --array=2-101%15
+#SBATCH --array=19-118%15
 #SBATCH --job-name="fmriprep_tran_\${SLURM_ARRAY_TASK_ID}"
 #SBATCH --output=fmriprep.%A_%a.out
 #SBATCH --nodes=1
@@ -17,7 +17,7 @@ echo "beginning preprocessing"
 
 export SINGULARITYENV_TEMPLATEFLOW_HOME=/projects/b1108/templateflow
 
-IFS=$'\n' read -d '' -r -a input_args < list_subs.txt
+IFS=$'\n' read -d '' -r -a input_args < list_subs_akash.txt
 
 #WITHOUT FMAP
 singularity run --cleanenv --containall -B /projects/b1108:/projects/b1108 \

@@ -25,6 +25,10 @@ import scipy.signal as sgnl #1.5.4
 
 ANT_REW = 1 #1 for anticipation, 0 for reward
 events_base = '/projects/b1108/studies/transitions/data/raw/neuroimaging/bids/'
+affine = [[2.5, 0. , 0. , -76. ],
+        [0. , 2.5, 0. , -112. ],
+        [0. , 0. , 2.5, -75.5],
+        [0. , 0. , 0. , 1. ]]
 
 def mid_fl(sub, ses, funcindir, sesoutdir):
     tr_list = []
@@ -35,12 +39,25 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
         
         #### READ IN FILES
         #Load in MID file, and mask
-        file_mid = os.path.join(funcindir, [x for x in flist if ('preproc_bold.nii.gz' in x and 'task-mid_run-0' + str(i) in x)][0])
+        file_mid = os.path.join(funcindir, [x for x in flist if ('_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz' in x and 'task-mid_run-0' + str(i) in x)][0])
         mid_img = nib.load(file_mid)
-        file_mid_mask = os.path.join(funcindir, [x for x in flist if ('brain_mask.nii.gz' in x and 'task-mid_run-0' + str(i) in x)][0])
+        print("mid img affines")
+        print(mid_img.affine)    
+        
+        #resample MID image so that the affines are the same for all images.
+        if(not(mid_img.affine == affine).all()):
+            mid_img = resample_img(mid_img, target_affine = affine)
+        print("resampled mid img affines")
+        print(mid_img.affine)   
+        file_mid_mask = os.path.join(funcindir, [x for x in flist if ('_space-MNI152NLin2009cAsym_desc-brain_mask.nii.gz' in x and 'task-mid_run-0' + str(i) in x)][0])
         mid_mask_img = nib.load(file_mid_mask)
+        
         mni_mask_img = load_mni152_brain_mask(resolution=None, threshold=0.2)
-        resampled_mni_mask = resample_to_img(mni_mask_img, mid_mask_img, interpolation="nearest")
+        print("mni mask affines")
+        print(mni_mask_img.affine)
+        resampled_mni_mask = resample_to_img(mni_mask_img, mid_img, interpolation="nearest")
+        print("resmapled mask affines")
+        print(resampled_mni_mask.affine)
         
         
         # Load confounds for MID and read in as pandas df
@@ -69,12 +86,13 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
             events.replace("rew_win_5_Hit", "rew_win_5or15_Hit", inplace=True) #merge 1.5 5 groups
             events.replace("rew_win_1.5_Hit", "rew_win_5or15_Hit", inplace=True)
             events.replace("rew_win_5_Miss", "rew_win_5or15_Miss", inplace=True)
+            events.replace("rew_win_1.5_Miss", "rew_win_5or15_Miss", inplace=True)
+            events.replace("rew_lose_5_Miss", "rew_lose_5or15_Miss", inplace=True) 
             events.replace("rew_lose_1.5_Miss", "rew_lose_5or15_Miss", inplace=True)
             events.replace("rew_lose_5_Hit", "rew_lose_5or15_Hit", inplace=True) 
             events.replace("rew_lose_1.5_Hit", "rew_lose_5or15_Hit", inplace=True)
-            events.replace("rew_lose_5_Miss", "rew_lose_5or15_Miss", inplace=True)
-            events.replace("rew_lose_1.5_Miss", "rew_lose_5or15_Miss", inplace=True)
-
+            print(events)
+        
         #### MANAGE CONFOUNDS AND MOTION
         # https://www.sciencedirect.com/science/article/pii/S1053811919306822
         confound_vars = ['trans_x','trans_y','trans_z', 'rot_x','rot_y','rot_z', 'global_signal'] # TODO change csf and whitematter 
@@ -99,7 +117,6 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
         print(sub + " total: " + str(num_TRs))
         print(sub + " regressed: " + str(len(regressed_TR)))
         tr_list.append([sub, ses, str(num_TRs), len(regressed_TR)])
-
         ##### Temporal bandpass filtering + Nuisance regression
         mid_band = image.clean_img(mid_img, detrend=False, standardize=False, t_r=tr,
                                 confounds=confounds_mid_df[final_confounds],
@@ -107,6 +124,7 @@ def mid_fl(sub, ses, funcindir, sesoutdir):
         
         mid_band.to_filename(sesoutdir+'/'+sub+'_'+ses+'_task-MID_run-0' + str(i) + '_final.nii.gz')
         
+        #mid_band = nib.load(sesoutdir+'/'+sub+'_'+ses+'_task-MID_run-0' + str(i) + '_final.nii.gz')
         #### Define Anticipation First Level Model 
         mid_model = FirstLevelModel(tr,
                             mask_img=resampled_mni_mask,
@@ -161,7 +179,7 @@ def main():
     problem_subs = ["sub-t1120"]#["sub-t1087", "sub-t1089", "sub-t1099", "sub-t1122", "sub-t1142"]
     
     for sub in subject:
-        if("sub-" in sub.name and not(".html" in sub.name) and sub.name == "sub-t1120"): #and (sub.name in problem_subs)
+        if("sub-" in sub.name and not(".html" in sub.name)): #and (sub.name in problem_subs)
             print(sub.name)
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
@@ -169,9 +187,9 @@ def main():
             preproc_rest = os.path.join(funcindir, sub.name +'_'+ses+'_task-mid_run-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz')
             if(os.path.exists(preproc_rest)):
                 os.makedirs(os.path.join(outdir, sub.name, ses), exist_ok=True)
-                sub_counts = mid_fl(sub.name, ses, funcindir, sesoutdir)
+                #sub_counts = mid_fl(sub.name, ses, funcindir, sesoutdir)
                 try:
-                    #sub_counts = mid_fl(sub.name, ses, funcindir, sesoutdir)
+                    sub_counts = mid_fl(sub.name, ses, funcindir, sesoutdir)
                     tr_counts.append(sub_counts[0])
                     tr_counts.append(sub_counts[1])
                 except Exception as e:
@@ -180,7 +198,5 @@ def main():
     with open('transitions_MID_TRs.csv', 'w') as myfile:
         wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
         for row in tr_counts:
-            wr.writerow(row)
-    
-            
+            wr.writerow(row) 
 main()

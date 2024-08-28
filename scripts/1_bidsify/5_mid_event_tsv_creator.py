@@ -48,6 +48,11 @@ def sus_out_files(path): #= dirs[10]
     midshared_files = []
     mid1_files = []
     mid2_files = []
+    
+    if(len(files) == 0):
+        print("No MID files or path DNE " + path)
+        return
+    
     for file in files: 
         #print(file)
         df = file_to_df(file)
@@ -222,21 +227,25 @@ def df_to_timing_txt(df, subject, mid2=0):
 
 def main():
     #dirs = ["/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioural/sub-t1269"] #ses-1/beh/3_MID_Scanner_HARP_11-1082-2.txt
-    dirs = glob.glob('/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/*')
+    dirs = glob.glob('/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/sub-t112*')
 
 
     ##USE THIS CHUNK TO CONVERT ONE SUB's DATA
     ## have to change line 174 depending on which split file it is.
     e_prime_file = '/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/sub-t1269/ses-1/beh/3_MID_Scanner_HARP_11.15-1269-3.txt'
     df = file_to_df(e_prime_file)
-    df_to_timing_txt(df, 'sub-t1269', 1)
+    id = 'sub-t1269' #TODO MAKE SURE THIS IS THE RIGHT ID 
+    if(id == e_prime_file.split("/")[-4]):
+        df_to_timing_txt(df, id)
+    else:
+        print("ID mismatch") 
 
     
     #for path in dirs :
     #    try:
     #        sus_out_files(path)
-    #   except Exception as e:
-    #       print("FAILURE: " + path)
+    #    except Exception as e:
+    #        print("FAILURE: " + path)
     #        print(traceback.format_exc())
     #counts.to_csv("MID_trial_types_counts.csv")
 
