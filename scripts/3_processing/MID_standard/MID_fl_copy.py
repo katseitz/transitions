@@ -50,7 +50,8 @@ def finish_preproc(sub, ses, run, funcindir, sesoutdir):
         Path to processed MID folder with sub/ses appended. 
     Returns
     -------
-    A list with the subject ID, session, number of TRs in MID run, and number of TRs regressed for motion
+    A list with the subject ID, session, number of TRs in MID run, 
+    and number of TRs regressed for motion
     """
     #### READ IN FILES
     flist = os.listdir(funcindir)
@@ -92,14 +93,12 @@ def finish_preproc(sub, ses, run, funcindir, sesoutdir):
             regressed_TR.add(counter)
             confounds_mid_df[col_name] = new_reg  #add a new confound column for the high motion TR
         counter = counter + 1
-    #print(sub + " total: " + str(num_TRs))
-    #print(sub + " regressed: " + str(len(regressed_TR)))
     
     ##### Temporal bandpass filtering + Nuisance regression
     mid_band = image.clean_img(mid_img, detrend=True, standardize=False, t_r=tr,
                             confounds=confounds_mid_df[final_confounds],
                             low_pass=0.08, high_pass=0.009)
-    #save preprocessed MID image
+    ### Save Output
     mid_band.to_filename(sesoutdir+'/'+sub+'_'+ses+'_task-mid_run-0' + run + '_final.nii.gz')
     return [sub, run, str(num_TRs), len(regressed_TR)]
 
@@ -346,12 +345,12 @@ def main():
     tr_counts = [["ID", "run", "original_shape", "regressed_TRs"]]
     extracted = [["ID", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg",  
                 "OFC_Oldham_ConGainHit_v_ConGainMiss_avg", "VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg"]]
-    
     for sub in subject:
-        if("sub-t120*" in sub.name and not(".html" in sub.name)):
+        if("sub-t12" in sub.name and not(".html" in sub.name)):
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
             #if they have a single MID run
+            print(sub.name)
             preproc_rest = os.path.join(funcindir, sub.name +'_'+ses+'_task-mid_run-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz')
             if(os.path.exists(preproc_rest)):
                 os.makedirs(os.path.join(outdir, sub.name, ses), exist_ok=True)
@@ -363,12 +362,12 @@ def main():
                 except Exception as e:
                     print(sub.name + " failed :( ")
                     print(e)
-    with open('transitions_MID_12xx_TRs_08272024.csv', 'w') as myfile:
+    with open('transitions_MID_12xx_TRs_09042024.csv', 'w') as myfile:
         wr = csv.writer(myfile)
         for row in tr_counts:
             wr.writerow(row) 
     
-    with open('transitions_MID_ROIS_12xx_TR_08272024s.csv', 'w') as myfile:
+    with open('transitions_MID_ROIS_12xx_TR_09042024s.csv', 'w') as myfile:
         wr = csv.writer(myfile)
         for row in extracted:
             wr.writerow(row)
