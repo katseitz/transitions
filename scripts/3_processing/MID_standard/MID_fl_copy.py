@@ -346,7 +346,7 @@ def main():
     extracted = [["ID", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg",  
                 "OFC_Oldham_ConGainHit_v_ConGainMiss_avg", "VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg"]]
     for sub in subject:
-        if("sub-t12" in sub.name and not(".html" in sub.name)):
+        if(("sub-t11" in sub.name or sub.name == "sub-t1080") and not(".html" in sub.name):
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
             #if they have a single MID run
@@ -362,12 +362,12 @@ def main():
                 except Exception as e:
                     print(sub.name + " failed :( ")
                     print(e)
-    with open('transitions_MID_12xx_TRs_09042024.csv', 'w') as myfile:
+    with open('transitions_MID_11xx_TRs_09042024.csv', 'w') as myfile:
         wr = csv.writer(myfile)
         for row in tr_counts:
             wr.writerow(row) 
     
-    with open('transitions_MID_ROIS_12xx_TR_09042024s.csv', 'w') as myfile:
+    with open('transitions_MID_ROIS_11xx_09042024s.csv', 'w') as myfile:
         wr = csv.writer(myfile)
         for row in extracted:
             wr.writerow(row)

@@ -109,6 +109,21 @@ def file_to_df(text_file):
     return df
     
 def df_to_timing_txt(df, subject, mid2=0):
+    print(mid2)
+    """
+    add info here
+    ----------
+    df : str
+        String from which to remove unicode characters.
+    subject : str
+        String from which to remove unicode characters.
+    mid2 : str
+        String from which to remove unicode characters.
+    Returns
+    -------
+    str
+        Input string, minus unicode characters.
+    """
     global counts
     #### MID RUN 1
     #### TRIAL TYPES
@@ -156,8 +171,11 @@ def df_to_timing_txt(df, subject, mid2=0):
     final_MID1 = MID_ant.append(MID_rew, ignore_index=True).append(MID_press, ignore_index = True)
     final_MID1.columns =['onset', 'trial_type', 'duration']
     final_MID1 = final_MID1.iloc[:,[0,2,1]]
-    final_MID1 = final_MID1.sort_values(by = 'onset') 
-    final_MID1.to_csv(basedir2 + subject + '/ses-1/func/' + subject + '_ses-1_task-mid_run-01_events.tsv', sep="\t", index=False) 
+    final_MID1 = final_MID1.sort_values(by = 'onset')
+    if(mid2 == 2):
+        final_MID1.to_csv(basedir2 + subject + '/ses-1/func/' + subject + '_ses-1_task-mid_run-02_events.tsv', sep="\t", index=False) 
+    else:    
+        final_MID1.to_csv(basedir2 + subject + '/ses-1/func/' + subject + '_ses-1_task-mid_run-01_events.tsv', sep="\t", index=False) 
   
     # Define data frame that counts the number of each condition by participant
     counts_MID1 = final_MID1['trial_type'].value_counts().reset_index().rename(columns={"index": "trial_type", "trial_type": "count"})
@@ -169,7 +187,7 @@ def df_to_timing_txt(df, subject, mid2=0):
     #print(subject + " suceeded")
   
      #MID RUN 2 
-    if(mid2):
+    if(mid2 == 1):
         #### MID RUN 2
         #### TRIAL TYPES
         trial_type2 = df.loc[df[0] == 'RunList2'][1]+ "-" #strcat(string(txt.Var2(find(contains(txt.Var1,'RunList1')))),'-');
@@ -227,28 +245,29 @@ def df_to_timing_txt(df, subject, mid2=0):
 
 def main():
     #dirs = ["/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioural/sub-t1269"] #ses-1/beh/3_MID_Scanner_HARP_11-1082-2.txt
-    dirs = glob.glob('/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/sub-t112*')
+    dirs = glob.glob('/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/sub-t11*')
 
 
     ##USE THIS CHUNK TO CONVERT ONE SUB's DATA
     ## have to change line 174 depending on which split file it is.
-    e_prime_file = '/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/sub-t1269/ses-1/beh/3_MID_Scanner_HARP_11.15-1269-3.txt'
+    
+    e_prime_file = '/projects/b1108/studies/transitions/data/raw/neuroimaging/behavioral/sub-t1134/ses-1/beh/3_MID_Scanner_HARP_11.15-1134-1.txt'
     df = file_to_df(e_prime_file)
-    id = 'sub-t1269' #TODO MAKE SURE THIS IS THE RIGHT ID 
+    id = 'sub-t1134' #TODO MAKE SURE THIS IS THE RIGHT ID 
     if(id == e_prime_file.split("/")[-4]):
-        df_to_timing_txt(df, id)
+        df_to_timing_txt(df, id, 1) #0 for mid1, 2 for mid2
     else:
         print("ID mismatch") 
-
+    '''
     
-    #for path in dirs :
-    #    try:
-    #        sus_out_files(path)
-    #    except Exception as e:
-    #        print("FAILURE: " + path)
-    #        print(traceback.format_exc())
-    #counts.to_csv("MID_trial_types_counts.csv")
-
+    for path in dirs :
+        try:
+            sus_out_files(path)
+        except Exception as e:
+            print("FAILURE: " + path)
+            print(traceback.format_exc())
+    counts.to_csv("MID_trial_types_counts.csv")
+    '''
 if __name__ == "__main__":
     main()
     

@@ -4,7 +4,7 @@ import glob
 import csv
 import itertools, os, glob
 
-fs_dir = ('/projects/b1108/studies/transitions/data/preprocessed/neuroimaging/freesurfer') #or use below for same data
+fs_dir = ('/projects/b1108/studies/transitions/data/preprocessed/neuroimaging/freesurfer_23_2') #or use below for same data
 fs_participants = glob.glob(os.path.join(fs_dir, '*'))
 
 
@@ -44,7 +44,7 @@ def main():
         cortex_file = os.path.join(participant_path, 'stats/aseg.stats')
         subject = cortex_file.split("/")[9] #identify participant
         print(subject,i)
-        if(subject != "fsaverage"):
+        if(subject != "fsaverage" and subject != "sub-t1142"):
             asegRaw = fsStat2pd(cortex_file)
             
             # get lhSurfaceHoles, rhSurfaceHoles, SurfaceHoles
@@ -125,7 +125,7 @@ def main():
     all_subs_df = pd.DataFrame(values, columns=final_df_columns)
     all_subs_df.index = patient_id
     #print(all_subs_df.shape)
-    all_subs_df.to_csv("transitions_t1_sMRI.csv")
+    all_subs_df.to_csv("transitions_t1_sMRI_09072024.csv")
 
         
         
