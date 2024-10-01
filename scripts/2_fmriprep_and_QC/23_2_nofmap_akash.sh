@@ -3,7 +3,7 @@
 #SBATCH -A p32480
 #SBATCH -p normal
 #SBATCH -t 16:00:00
-#SBATCH --array=19-118%15
+#SBATCH --array=1%1
 #SBATCH --job-name="fmriprep_tran_\${SLURM_ARRAY_TASK_ID}"
 #SBATCH --output=fmriprep.%A_%a.out
 #SBATCH --nodes=1

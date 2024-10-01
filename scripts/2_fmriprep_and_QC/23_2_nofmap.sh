@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-#SBATCH -A p31833
+#SBATCH -A p32480
 #SBATCH -p normal
 #SBATCH -t 16:00:00
 #SBATCH --array=0-1%15

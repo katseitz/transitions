@@ -228,7 +228,7 @@ def extract_rois(sub, ses, funcindir, sesoutdir):
     param_mid_df = json.load(param_mid_file)
     # Get TRs
     tr = param_mid_df['RepetitionTime']
-
+    '''
     ###ROI 1: VS_Oldham_Rew_AntGain_v_AntNoGain_avg
     #load t-maps
     antgain_vs_antnogain_1 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-01_ant_win_5or15_vs_ant_win_0_tmap.nii.gz')
@@ -306,10 +306,44 @@ def extract_rois(sub, ses, funcindir, sesoutdir):
     series_1 = masker.fit_transform(rewgainhit_vs_rewgainmiss_1)
     series_2 = masker.fit_transform(rewgainhit_vs_rewgainmiss_2)
     VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg = (series_1[0][0] + series_2[0][0])/2
+    '''
+    
+    ###ROI 5: AMYG_HO_Rew_AntGain_v_AntNoGain_avg
+    #TODO:
+    #AntGain_v_AntNoGain_avg -- DONE
+    #AntLoss_v_AntNoLoss_avg
+    #ConGainHit_v_ConGainMiss_avg
+    #ConLossMiss_v_ConLossHit_avg
+    #load t-maps
+    antgain_vs_antnogain_1 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-01_ant_win_5or15_vs_ant_win_0_tmap.nii.gz')
+    antgain_vs_antnogain_2 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-02_ant_win_5or15_vs_ant_win_0_tmap.nii.gz')
+    
+    #load roi
+    amyg_HO = nib.load(roi_path + "anticipation/HO_Amygdala_50prob.nii.gz")
+    
+    masker = NiftiLabelsMasker(labels_img=amyg_HO,
+                        smoothing_fwhm=None,
+                        standardize=False,
+                        detrend=False,
+                        low_pass=None,
+                        high_pass=None,
+                        verbose=5,
+                        t_r=tr
+                    )
+    
+    series_1 = masker.fit_transform(antgain_vs_antnogain_1)
+    series_2 = masker.fit_transform(antgain_vs_antnogain_2)
+    Amyg_HO_Rew_AntGain_v_AntNoGain_avg = (series_1[0][0] + series_2[0][0])/2
     
     
-    return [sub, VS_Oldham_Rew_AntGain_v_AntNoGain_avg, VS_Oldham_Rew_AntGain_v_AntNoGain_avg,  
-            OFC_Oldham_ConGainHit_v_ConGainMiss_avg, VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg]
+    #TODO ADD ON HERE 
+     
+    
+    #This is the return for all non AMYG ROIs
+    #return [sub, VS_Oldham_Rew_AntGain_v_AntNoGain_avg, VS_Oldham_Rew_AntGain_v_AntNoGain_avg,  
+    #        OFC_Oldham_ConGainHit_v_ConGainMiss_avg, VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg]
+    
+    return [sub, Amyg_HO_Rew_AntGain_v_AntNoGain_avg,]
 
 
 
@@ -334,8 +368,9 @@ def caller(sub, ses, funcindir, sesoutdir):
     """
     i = 1
     tr_list = []
+    '''
     while(i <= len(glob.glob(funcindir + "*_ses-1_task-mid_run-*_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"))):
-        print("########\nworking on run 0" + str(i) + " for participant " + sub + "\n########")
+        print("########\nworking on run 0" + str(i) + " for participant " + sub + "\n########", flush=True)
         sub_counts = finish_preproc(sub, ses, str(i), funcindir, sesoutdir)
         counts_confounds = define_confounds(sub, ses, str(i), funcindir, sesoutdir)
         tr_list.append(counts_confounds[0])
@@ -343,8 +378,11 @@ def caller(sub, ses, funcindir, sesoutdir):
         first_levels(sub, ses, str(i), funcindir, sesoutdir, confounds, 1)
         first_levels(sub, ses, str(i), funcindir, sesoutdir, confounds, 0)
         i = i+1
+    '''
     extract = extract_rois(sub, ses, funcindir, sesoutdir)
-    return tr_list, extract
+    #use this when running whole process
+    #return tr_list, extract
+    return [], extract
 
 def main():
     ses = "ses-1" #bids ses-1
@@ -352,10 +390,15 @@ def main():
     outdir = '/projects/b1108/studies/transitions/data/processed/neuroimaging/mid_processing_nofmap/'
     subject = os.scandir(indir)
     tr_counts = [["ID", "run", "original_shape", "regressed_TRs"]]
-    extracted = [["ID", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg",  
-                "OFC_Oldham_ConGainHit_v_ConGainMiss_avg", "VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg"]]
+    
+    #extracted = [["ID", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg",  
+    #            "OFC_Oldham_ConGainHit_v_ConGainMiss_avg", "VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg"]]
+    
+    #TODO define new extracted
+    extracted = [['ID','NEW ROI NAMES...']]
     for sub in subject:
-        if(("sub-t1" in sub.name) and not(".html" in sub.name)):
+        #TODO pick a test subjec that we have good MID data for at T1
+        if(("sub-t1001" in sub.name) and not(".html" in sub.name)):
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
             #if they have a single MID run
@@ -365,18 +408,18 @@ def main():
                 os.makedirs(os.path.join(outdir, sub.name, ses), exist_ok=True)
                 try:
                     sub_counts, rois_extracted = caller(sub.name, ses, funcindir, sesoutdir)
-                    tr_counts.append(sub_counts[0])
-                    tr_counts.append(sub_counts[1])
+                    #tr_counts.append(sub_counts[0])
+                    #tr_counts.append(sub_counts[1])
                     extracted.append(rois_extracted)
                 except Exception as e:
                     print(sub.name + " failed :( ")
                     print(e)
-    with open('transitions_MID_all_TRs_09102024.csv', 'a') as myfile:
-        wr = csv.writer(myfile)
-        for row in tr_counts:
-            wr.writerow(row) 
+    #with open('transitions_MID_all_TRs_09102024.csv', 'a') as myfile:
+    #    wr = csv.writer(myfile)
+    #    for row in tr_counts:
+    #        wr.writerow(row) 
     
-    with open('transitions_MID_all_ROIs_09102024s.csv', 'a') as myfile:
+    with open('transitions_MID_amyg_ROIs_10012024s.csv', 'a') as myfile:
         wr = csv.writer(myfile)
         for row in extracted:
             wr.writerow(row)

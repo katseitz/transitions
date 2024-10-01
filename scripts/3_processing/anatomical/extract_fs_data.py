@@ -44,13 +44,16 @@ def main():
         cortex_file = os.path.join(participant_path, 'stats/aseg.stats')
         subject = cortex_file.split("/")[9] #identify participant
         print(subject,i)
-        if(subject != "fsaverage" and subject != "sub-t1142"):
+        if(subject != "fsaverage" and subject != "sub-t1142_orig"):
             asegRaw = fsStat2pd(cortex_file)
             
             # get lhSurfaceHoles, rhSurfaceHoles, SurfaceHoles
             lhSurfaceHoles = getMeasures(asegRaw,'lhSurfaceHoles')
             rhSurfaceHoles = getMeasures(asegRaw,'rhSurfaceHoles')
             SurfaceHoles = getMeasures(asegRaw,'SurfaceHoles')
+            TotalGrayVol = getMeasures(asegRaw,'TotalGray')
+            CortGrayVol = getMeasures(asegRaw,'Cortex')
+
             
             # confirm starting index
             asegInd = asegRaw[0][asegRaw[0] == '# NRows 45 '].index[0]
@@ -107,7 +110,7 @@ def main():
             lhMeanThickness = getMeasures_rhlh(aparclhRaw,'MeanThickness')
             
             # defining dataset and dataframe
-            measures_data = {'lhSurfaceHoles':[lhSurfaceHoles],'rhSurfaceHoles':[rhSurfaceHoles], 'SurfaceHoles':[SurfaceHoles],
+            measures_data = {'TotalGrayVol':[TotalGrayVol], 'CorticalGrayVol':[CortGrayVol],'lhSurfaceHoles':[lhSurfaceHoles],'rhSurfaceHoles':[rhSurfaceHoles], 'SurfaceHoles':[SurfaceHoles],
                             'rhNumVert':[rhNumVert],'rhWhiteSurfArea':[rhWhiteSurfArea],'rhMeanThickness':rhMeanThickness,
                             'lhNumVert':[lhNumVert],'lhWhiteSurfArea':[lhWhiteSurfArea],'lhMeanThickness':[lhMeanThickness]}
             measures_df = pd.DataFrame(measures_data)
@@ -125,7 +128,7 @@ def main():
     all_subs_df = pd.DataFrame(values, columns=final_df_columns)
     all_subs_df.index = patient_id
     #print(all_subs_df.shape)
-    all_subs_df.to_csv("transitions_t1_sMRI_09072024.csv")
+    all_subs_df.to_csv("transitions_t1_sMRI_09302024.csv")
 
         
         
