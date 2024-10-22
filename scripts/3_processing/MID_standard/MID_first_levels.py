@@ -228,7 +228,7 @@ def extract_rois(sub, ses, funcindir, sesoutdir):
     param_mid_df = json.load(param_mid_file)
     # Get TRs
     tr = param_mid_df['RepetitionTime']
-    '''
+    
     ###ROI 1: VS_Oldham_Rew_AntGain_v_AntNoGain_avg
     #load t-maps
     antgain_vs_antnogain_1 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-01_ant_win_5or15_vs_ant_win_0_tmap.nii.gz')
@@ -308,16 +308,12 @@ def extract_rois(sub, ses, funcindir, sesoutdir):
     VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg = (series_1[0][0] + series_2[0][0])/2
     '''
     
+    #### AMYGDALA ROI GROUP BELOW
     ###ROI 5: AMYG_HO_Rew_AntGain_v_AntNoGain_avg
-    #TODO:
-    #AntGain_v_AntNoGain_avg -- DONE
-    #AntLoss_v_AntNoLoss_avg
-    #ConGainHit_v_ConGainMiss_avg
-    #ConLossMiss_v_ConLossHit_avg
     #load t-maps
     antgain_vs_antnogain_1 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-01_ant_win_5or15_vs_ant_win_0_tmap.nii.gz')
     antgain_vs_antnogain_2 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-02_ant_win_5or15_vs_ant_win_0_tmap.nii.gz')
-    
+     
     #load roi
     amyg_HO = nib.load(roi_path + "anticipation/HO_Amygdala_50prob.nii.gz")
     
@@ -334,16 +330,36 @@ def extract_rois(sub, ses, funcindir, sesoutdir):
     series_1 = masker.fit_transform(antgain_vs_antnogain_1)
     series_2 = masker.fit_transform(antgain_vs_antnogain_2)
     Amyg_HO_Rew_AntGain_v_AntNoGain_avg = (series_1[0][0] + series_2[0][0])/2
-    
-    
-    #TODO ADD ON HERE 
+
+    ###ROI 6: AMYG_HO_Rew_AntLoss_v_AntNoLoss_avg
+    antloss_vs_antnoloss_1 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-01_ant_lose_5or15_vs_ant_lose_0_tmap.nii.gz')
+    antloss_vs_antnoloss_2 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-02_ant_lose_5or15_vs_ant_lose_0_tmap.nii.gz')
+    series_1 = masker.fit_transform(antloss_vs_antnoloss_1)
+    series_2 = masker.fit_transform(antloss_vs_antnoloss_2)
+    Amyg_HO_Rew_AntLoss_v_AntNoLoss_avg = (series_1[0][0] + series_2[0][0])/2
      
+
+     ###ROI 7: AMYG_HO_Rew_ConGainHit_v_ConGainMiss_avg
+    rewgainhit_vs_rewgainmiss_1 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-01_rew_win_5or15_Hit_vs_rew_win_5or15_Miss_tmap.nii.gz')
+    rewgainhit_vs_rewgainmiss_2 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-02_rew_win_5or15_Hit_vs_rew_win_5or15_Miss_tmap.nii.gz')
+    series_1 = masker.fit_transform(rewgainhit_vs_rewgainmiss_1)
+    series_2 = masker.fit_transform(rewgainhit_vs_rewgainmiss_2)
+    Amyg_HO_Rew_ConGainHit_v_ConGainMiss_avg = (series_1[0][0] + series_2[0][0])/2
     
+
+    ###ROI 8: AMYG_HO_Rew_ConLossMiss_v_ConLossHit_avg
+    rewlossmiss_vs_rewlosshit_1 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-01_rew_lose_5or15_Miss_vs_rew_lose_5or15_Hit_tmap.nii.gz')
+    rewlossmiss_vs_rewlosshit_2 = nib.load(sesoutdir + sub + '_'+ses+'_task-mid_run-01_rew_lose_5or15_Miss_vs_rew_lose_5or15_Hit_tmap.nii.gz')
+    series_1 = masker.fit_transform(rewlossmiss_vs_rewlosshit_1)
+    series_2 = masker.fit_transform(rewlossmiss_vs_rewlosshit_2)
+    Amyg_HO_Rew_ConLossMiss_v_ConLossHit_avg = (series_1[0][0] + series_2[0][0])/2
+
+    '''
     #This is the return for all non AMYG ROIs
-    #return [sub, VS_Oldham_Rew_AntGain_v_AntNoGain_avg, VS_Oldham_Rew_AntGain_v_AntNoGain_avg,  
-    #        OFC_Oldham_ConGainHit_v_ConGainMiss_avg, VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg]
+    return [sub, VS_Oldham_Rew_AntGain_v_AntNoGain_avg, VS_Oldham_Rew_AntGain_v_AntNoGain_avg,  
+            OFC_Oldham_ConGainHit_v_ConGainMiss_avg, VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg]
     
-    return [sub, Amyg_HO_Rew_AntGain_v_AntNoGain_avg,]
+    #return [sub, Amyg_HO_Rew_AntGain_v_AntNoGain_avg, Amyg_HO_Rew_AntLoss_v_AntNoLoss_avg, Amyg_HO_Rew_ConGainHit_v_ConGainMiss_avg, Amyg_HO_Rew_ConLossMiss_v_ConLossHit_avg]
 
 
 
@@ -391,14 +407,12 @@ def main():
     subject = os.scandir(indir)
     tr_counts = [["ID", "run", "original_shape", "regressed_TRs"]]
     
-    #extracted = [["ID", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg",  
-    #            "OFC_Oldham_ConGainHit_v_ConGainMiss_avg", "VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg"]]
-    
-    #TODO define new extracted
-    extracted = [['ID','NEW ROI NAMES...']]
+    extracted = [["ID", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg", "VS_Oldham_Rew_AntGain_v_AntNoGain_avg",  
+                "OFC_Oldham_ConGainHit_v_ConGainMiss_avg", "VS_Oldham_Con_ConGainHit_v_ConGainMiss_avg"]]
+    #extracted = [['ID','Amyg_HO_Rew_AntGain_v_AntNoGain_avg', 'Amyg_HO_Rew_AntLoss_v_AntNoLoss_avg', 
+    #            'Amyg_HO_Rew_ConGainHit_v_ConGainMiss_avg', 'Amyg_HO_Rew_ConLossMiss_v_ConLossHit_avg']]
     for sub in subject:
-        #TODO pick a test subjec that we have good MID data for at T1
-        if(("sub-t1001" in sub.name) and not(".html" in sub.name)):
+        if(not(".html" in sub.name) and sub.name == "sub-t1147"):
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
             #if they have a single MID run
@@ -414,12 +428,12 @@ def main():
                 except Exception as e:
                     print(sub.name + " failed :( ")
                     print(e)
-    #with open('transitions_MID_all_TRs_09102024.csv', 'a') as myfile:
+    #with open('transitions_MID_all_TRs_10102024.csv', 'a') as myfile:
     #    wr = csv.writer(myfile)
     #    for row in tr_counts:
     #        wr.writerow(row) 
     
-    with open('transitions_MID_amyg_ROIs_10012024s.csv', 'a') as myfile:
+    with open('transitions_MID_all_ROIs_10102024s.csv', 'a') as myfile:
         wr = csv.writer(myfile)
         for row in extracted:
             wr.writerow(row)

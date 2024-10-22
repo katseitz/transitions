@@ -128,7 +128,7 @@ def main():
     all_subs_df = pd.DataFrame(values, columns=final_df_columns)
     all_subs_df.index = patient_id
     #print(all_subs_df.shape)
-    all_subs_df.to_csv("transitions_t1_sMRI_09302024.csv")
+    all_subs_df.to_csv("transitions_t1_sMRI_10102024.csv")
 
         
         
