@@ -36,7 +36,7 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
         file_rest_mask = os.path.join(funcindir, [x for x in flist if ('_space-MNI152NLin6Asym_desc-brain_mask.nii.gz' in x and 'task-rest_run-0' + str(i) in x)][0])
         rest_mask_img = nib.load(file_rest_mask)
         
-        # Load confounds for rest, avoid and faces
+        # Load confounds for rest
         #sub-20572_ses-2_task-rest_run-1_desc-confounds_timeseries.tsv
         confounds_rest_path = os.path.join(funcindir, [x for x in flist if ('task-rest_run-0' + str(i) + '_desc-confounds_timeseries.tsv' in x)][0])
         confounds_rest_df = pd.read_csv(confounds_rest_path, sep='\t')
@@ -80,12 +80,12 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
         print((~confounds_rest_df['ffd_good']).values.sum())
         #i = i + 1 #COMMENT OUT LATER JUST FOR TESTING
         
-        ##### Censor the TRs where fFD > .3
+        ##### Censor the TRs where fFD > .1
         rest_cen, confounds_rest_df = remove_trs(rest_reg, confounds_rest_df, replace=False)
         print("after censoring 1")
         print(rest_cen.shape)
 
-        ##### Interpolate over these TRs
+        ##### Interpolate over these Volumess
         rest_int = cubic_interp(rest_cen, rest_mask_img, rest_tr, confounds_rest_df)
         print("after interpolation 1")
         print(rest_int.shape)
@@ -109,8 +109,9 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
         networks = ['CEN', 'AS', 'ATTC', 'ER', 'DMN', 'PS', 'FS']
         for network in networks:
             # Get the labeled image and labels
-            labels_img = nib.load('/home/sir8526/processing/AIB_T2_Networks/' + network + '_merged_image.nii.gz')
-            labels_path = '/home/sir8526/processing/AIB_T2_Networks/' + network + '_label.txt'
+            #TODO fill 
+            labels_img = nib.load('/projects/b1108/studies/transitions/scripts/3_processing/AIB_rest/AIB_networks/' + network + '_merged_image.nii.gz')
+            labels_path = '/projects/b1108/studies/transitions/scripts/3_processing/AIB_rest/AIB_networks/' + network + '_label.txt'
             labels_df = pd.read_csv(labels_path, sep='\t')
             new_header = labels_df.iloc[0] #grab the first row for the header
             labels_df = labels_df[1:] #take the data less the header row
@@ -152,7 +153,7 @@ def postproc_rest(sub, ses, funcindir, sesoutdir):
             tr_list.append([sub, ses, i, rest_cen2.shape])
         i = i+1
         print("updated i " + str(i))
-        return tr_list
+    return tr_list
         
 
 def main():
@@ -163,7 +164,7 @@ def main():
     tr_counts = [["ID", "ses", "run", "cleaned_shape"]]
     #subjects = glob.glob('/projects/b1108/studies/transitions2/data/processed/neuroimaging/ses-1_v23_2_0_nofmap/sub-t102*')
     for sub in subjects:
-        if("sub-" in sub.name and not(".html" in sub.name) and sub.name == "sub-t1250"):
+        if("sub-t125" in sub.name and not(".html" in sub.name)):
             #print(sub.name)
             funcindir = indir + sub.name + '/' + ses + '/func/' 
             sesoutdir = outdir + sub.name + '/' + ses + '/'
@@ -176,10 +177,10 @@ def main():
                         tr_counts.append(val)
                 except Exception as e:
                     print(e)
-        #with open('transitions_REST_fd-1_TRs.csv', 'w') as myfile:
-        #    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-        #    for row in tr_counts:
-        #       wr.writerow(row)
+        with open('transitions_REST_fd-1_TRs.csv', 'w') as myfile:
+            wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+            for row in tr_counts:
+                wr.writerow(row)
         '''
         elif(not '.html' in sub):
             print("here")
